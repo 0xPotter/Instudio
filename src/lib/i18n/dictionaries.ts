@@ -48,25 +48,7 @@ export const dictionaries = {
       yearLabel: "Year",
       yearValue: "2021—2024",
       focusLabel: "Focus",
-      focusValue: "Web3, Audio, UX",
-      projects: {
-        obsidianEchoes: {
-          title: "Obsidian Echoes",
-          tag: "Spatial Audio / 2024",
-        },
-        monolithOs: {
-          title: "Monolith OS",
-          tag: "Digital Architecture / 2023",
-        },
-        liquidLogic: {
-          title: "Liquid Logic",
-          tag: "Visual Identity / 2024",
-        },
-        etherCore: {
-          title: "Ether Core",
-          tag: "Infrastructure / 2024",
-        },
-      },
+      focusValue: "Visuals, Audio, Labs",
     },
     footer: {
       connect: "Connect",
@@ -124,25 +106,7 @@ export const dictionaries = {
       yearLabel: "Año",
       yearValue: "2021—2024",
       focusLabel: "Enfoque",
-      focusValue: "Web3, Audio, UX",
-      projects: {
-        obsidianEchoes: {
-          title: "Ecos de Obsidiana",
-          tag: "Audio Espacial / 2024",
-        },
-        monolithOs: {
-          title: "Monolith OS",
-          tag: "Arquitectura Digital / 2023",
-        },
-        liquidLogic: {
-          title: "Lógica Líquida",
-          tag: "Identidad Visual / 2024",
-        },
-        etherCore: {
-          title: "Ether Core",
-          tag: "Infraestructura / 2024",
-        },
-      },
+      focusValue: "Visuals, Audio, Labs",
     },
     footer: {
       connect: "Conectar",

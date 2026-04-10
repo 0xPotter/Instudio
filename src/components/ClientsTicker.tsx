@@ -1,18 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { clients } from "@/lib/data/clients";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-
-const CLIENTS = [
-  "Nexus",
-  "Vertex",
-  "Aether",
-  "Prisma",
-  "Oracle",
-  "Lumen",
-  "Cortex",
-  "Axiom",
-  "Spectra",
-];
 
 export function ClientsTicker() {
   const { t } = useLocale();
@@ -26,12 +16,22 @@ export function ClientsTicker() {
       <span className="font-label text-[10px] uppercase tracking-[0.3em]">
         {t.clients.label}
       </span>
-      {CLIENTS.map((name) => (
+      {clients.map((client) => (
         <div
-          key={`${key}-${name}`}
-          className="text-2xl font-black uppercase tracking-tighter"
+          key={`${key}-${client.id}`}
+          className="flex items-center text-2xl font-black uppercase tracking-tighter"
         >
-          {name}
+          {client.logo ? (
+            <Image
+              src={client.logo}
+              alt={client.name}
+              width={120}
+              height={32}
+              className="h-8 w-auto"
+            />
+          ) : (
+            <span>{client.name}</span>
+          )}
         </div>
       ))}
     </div>
@@ -39,7 +39,7 @@ export function ClientsTicker() {
 
   return (
     <section className="overflow-hidden border-y border-outline-variant/10 bg-surface py-20">
-      <div className="flex w-max animate-ticker items-center gap-12 grayscale opacity-30 whitespace-nowrap">
+      <div className="flex w-max animate-ticker items-center gap-12 whitespace-nowrap opacity-30 grayscale">
         {renderSet("primary")}
         {renderSet("duplicate")}
       </div>
