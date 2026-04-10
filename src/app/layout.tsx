@@ -1,0 +1,39 @@
+import type { Metadata } from "next";
+import { Inter, Manrope } from "next/font/google";
+import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "IN — Architects of Impact",
+  description:
+    "IN is a digital agency curating experiences across design, audio, and technology.",
+  metadataBase: new URL("https://in-agency.com"),
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={`dark ${inter.variable} ${manrope.variable}`}>
+      <body className="bg-surface text-on-surface font-body antialiased">
+        <LocaleProvider>{children}</LocaleProvider>
+      </body>
+    </html>
+  );
+}
