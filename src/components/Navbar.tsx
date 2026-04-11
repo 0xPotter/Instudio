@@ -2,19 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 const NAV_ITEMS = [
-  { key: "work", href: "#work" },
-  { key: "studio", href: "#studio" },
-  { key: "audio", href: "#audio" },
-  { key: "labs", href: "#labs" },
-  { key: "contact", href: "#contact" },
+  { key: "work", href: "/work" },
+  { key: "studio", href: "/#studio" },
+  { key: "audio", href: "/#audio" },
+  { key: "labs", href: "/#labs" },
+  { key: "contact", href: "/#contact" },
 ] as const;
+
+function isActive(pathname: string, href: string): boolean {
+  if (href.startsWith("/#")) return false;
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Navbar() {
   const { t, locale, toggleLocale } = useLocale();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -42,19 +50,22 @@ export function Navbar() {
           </Link>
 
           <div className="hidden md:flex md:items-center md:space-x-12">
-            {NAV_ITEMS.map((item, idx) => (
-              <a
-                key={item.key}
-                href={item.href}
-                className={`font-label text-[11px] font-medium uppercase tracking-[0.1em] transition-opacity duration-200 hover:opacity-70 ${
-                  idx === 0
-                    ? "border-b border-white pb-1 text-white"
-                    : "text-neutral-400 hover:text-white"
-                }`}
-              >
-                {t.nav[item.key]}
-              </a>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={`font-label text-[11px] font-medium uppercase tracking-[0.1em] transition-opacity duration-200 hover:opacity-70 ${
+                    active
+                      ? "border-b border-white pb-1 text-white"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  {t.nav[item.key]}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-3 md:gap-5">
@@ -122,20 +133,23 @@ export function Navbar() {
             </button>
           </div>
           <nav className="flex flex-col">
-            {NAV_ITEMS.map((item, idx) => (
-              <a
-                key={item.key}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`px-8 py-6 font-label text-xl font-bold uppercase tracking-tight transition-all ${
-                  idx === 0
-                    ? "border-l-4 border-white bg-neutral-900 text-white"
-                    : "text-neutral-500 hover:bg-neutral-900 hover:text-white"
-                }`}
-              >
-                {t.nav[item.key]}
-              </a>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={`px-8 py-6 font-label text-xl font-bold uppercase tracking-tight transition-all ${
+                    active
+                      ? "border-l-4 border-white bg-neutral-900 text-white"
+                      : "text-neutral-500 hover:bg-neutral-900 hover:text-white"
+                  }`}
+                >
+                  {t.nav[item.key]}
+                </Link>
+              );
+            })}
           </nav>
           <div className="mt-auto p-8">
             <button

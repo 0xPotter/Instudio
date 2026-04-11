@@ -96,6 +96,32 @@ export const projects: Project[] = [
     publishedAt: "2024-07-15",
     gridSpan: 8,
   },
+  {
+    id: "p-005",
+    slug: "modular-synthesis",
+    title: { en: "Modular Synthesis", es: "Síntesis Modular" },
+    description: {
+      en: "Sound design system for a generative cinema experience.",
+      es: "Sistema de diseño sonoro para una experiencia de cine generativo.",
+    },
+    division: "invisuals",
+    media: [placeholder("project-modular-synthesis")],
+    publishedAt: "2024-05-28",
+    gridSpan: 6,
+  },
+  {
+    id: "p-006",
+    slug: "mercury-flow",
+    title: { en: "Mercury Flow", es: "Flujo Mercurio" },
+    description: {
+      en: "AI-driven motion identity for a fintech rebrand.",
+      es: "Identidad en movimiento impulsada por IA para un rebrand fintech.",
+    },
+    division: "inlabs",
+    media: [placeholder("project-mercury-flow")],
+    publishedAt: "2024-04-10",
+    gridSpan: 6,
+  },
 ];
 
 /**

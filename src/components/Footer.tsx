@@ -53,6 +53,15 @@ export function Footer() {
               {t.footer.contact}
             </a>
           </div>
+          <div className="mb-6 flex items-center gap-3">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            <span className="font-label text-[10px] uppercase tracking-widest text-neutral-500">
+              {t.footer.systemStatus}
+            </span>
+          </div>
           <div className="font-body text-sm text-neutral-500">
             {t.footer.rights}
           </div>

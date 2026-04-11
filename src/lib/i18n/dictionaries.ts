@@ -50,11 +50,34 @@ export const dictionaries = {
       focusLabel: "Focus",
       focusValue: "Visuals, Audio, Labs",
     },
+    workPage: {
+      eyebrow: "Archive / 2021—2024",
+      title: "The Work.",
+      intro:
+        "A living archive of selected projects across our three divisions. Each fragment is a study in restraint, intuition, and the quiet alchemy between human craft and machine.",
+      filterLabel: "Filter",
+      filters: {
+        all: "All",
+        inlabs: "IN LABS",
+        inaudio: "IN AUDIO",
+        invisuals: "IN VISUALS",
+      },
+      empty: "No projects in this division yet.",
+      cta: {
+        eyebrow: "Start a Project",
+        heading: "Have a vision worth building?",
+        description:
+          "We're a small team with strong opinions and an open inbox. Tell us what you're working on.",
+        action: "Get in Touch",
+      },
+      systemStatus: "Archive Operational",
+    },
     footer: {
       connect: "Connect",
       contact: "Contact",
       tagline: "Inteligencia Natural",
       rights: "© 2024 IN Studio. All rights reserved.",
+      systemStatus: "All Systems Operational",
     },
   },
   es: {
@@ -108,11 +131,34 @@ export const dictionaries = {
       focusLabel: "Enfoque",
       focusValue: "Visuals, Audio, Labs",
     },
+    workPage: {
+      eyebrow: "Archivo / 2021—2024",
+      title: "El Trabajo.",
+      intro:
+        "Un archivo vivo de proyectos seleccionados a través de nuestras tres divisiones. Cada fragmento es un estudio de contención, intuición y la alquimia silenciosa entre el oficio humano y la máquina.",
+      filterLabel: "Filtrar",
+      filters: {
+        all: "Todos",
+        inlabs: "IN LABS",
+        inaudio: "IN AUDIO",
+        invisuals: "IN VISUALS",
+      },
+      empty: "Aún no hay proyectos en esta división.",
+      cta: {
+        eyebrow: "Inicia un Proyecto",
+        heading: "¿Tienes una visión que valga la pena construir?",
+        description:
+          "Somos un equipo pequeño con opiniones fuertes y un buzón abierto. Cuéntanos en qué estás trabajando.",
+        action: "Contáctanos",
+      },
+      systemStatus: "Archivo Operativo",
+    },
     footer: {
       connect: "Conectar",
       contact: "Contacto",
       tagline: "Inteligencia Natural",
       rights: "© 2024 IN Studio. Todos los derechos reservados.",
+      systemStatus: "Todos los Sistemas Operativos",
     },
   },
 } as const;

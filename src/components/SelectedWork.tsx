@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { sortedProjects, type Project } from "@/lib/data/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
@@ -23,21 +24,25 @@ function formatYear(iso: string): string {
 
 export function SelectedWork() {
   const { t, locale } = useLocale();
+  const featured = sortedProjects.slice(0, 4);
 
   return (
-    <section id="work" className="bg-surface py-24 md:py-32">
+    <section id="work" className="bg-surface py-24 md:py-32" aria-labelledby="selected-work-heading">
       <div className="container mx-auto max-w-screen-3xl px-6 md:px-8">
         <div className="mb-16 flex flex-col items-start justify-between gap-12 md:mb-24 md:flex-row">
           <div className="flex flex-col items-start gap-8">
-            <h2 className="max-w-sm font-headline text-5xl font-black uppercase tracking-tighter md:text-6xl">
+            <h2
+              id="selected-work-heading"
+              className="max-w-sm font-headline text-5xl font-black uppercase tracking-tighter md:text-6xl"
+            >
               {t.work.heading}
             </h2>
-            <a
-              href="#"
+            <Link
+              href="/work"
               className="inline-block rounded-full border border-primary px-10 py-4 font-label text-[11px] uppercase tracking-widest text-primary transition-all duration-300 hover:bg-primary hover:text-surface"
             >
               {t.work.cta}
-            </a>
+            </Link>
           </div>
           <div className="flex items-center space-x-12">
             <div className="flex flex-col">
@@ -60,7 +65,7 @@ export function SelectedWork() {
         </div>
 
         <div className="grid auto-rows-[60vh] grid-cols-1 gap-4 md:auto-rows-[40vh] md:grid-cols-12">
-          {sortedProjects.map((project) => {
+          {featured.map((project) => {
             const cover = project.media[0];
             const coverUrl = cover?.type === "image" ? cover.url : undefined;
             const span = SPAN_CLASS[project.gridSpan ?? 4];
