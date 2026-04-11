@@ -8,6 +8,14 @@
 
 export type Division = "inlabs" | "inaudio" | "invisuals";
 
+export type Discipline =
+  | "photography"
+  | "video"
+  | "animation"
+  | "design"
+  | "branding"
+  | "audio";
+
 export type ProjectMedia =
   | { type: "image"; url: string; alt?: string }
   | { type: "video"; url: string; poster?: string }
@@ -24,24 +32,35 @@ export type Project = {
   description: { en: string; es: string };
   /** Which IN division this project belongs to */
   division: Division;
+  /** Primary discipline — drives the /work archive filter */
+  discipline: Discipline;
   /** Media gallery (first item is the cover) */
   media: ProjectMedia[];
   /** Optional external link (case study, behance, vimeo, etc.) */
   externalLink?: string;
   /** ISO date — controls ordering on the home grid */
   publishedAt: string;
-  /** Layout span for the masonry grid on desktop (1–12, defaults to 4) */
-  gridSpan?: 4 | 6 | 8 | 12;
 };
 
 /**
  * Helper to build a picsum.photos placeholder URL with a deterministic seed.
  * Replace these with real assets (or Supabase Storage URLs) when ready.
  */
-const placeholder = (seed: string, w = 1600, h = 1000): ProjectMedia => ({
+const placeholder = (seed: string, w = 1600, h = 1067): ProjectMedia => ({
   type: "image",
   url: `https://picsum.photos/seed/${seed}/${w}/${h}`,
 });
+
+/**
+ * Build a 4-image gallery from a base seed (cover + 3 detail shots).
+ * Cover keeps the base seed so it stays consistent across the site.
+ */
+const gallery = (seed: string): ProjectMedia[] => [
+  placeholder(seed),
+  placeholder(`${seed}-2`),
+  placeholder(`${seed}-3`),
+  placeholder(`${seed}-4`),
+];
 
 export const projects: Project[] = [
   {
@@ -53,9 +72,9 @@ export const projects: Project[] = [
       es: "Instalación de audio espacial explorando la resonancia de la materia oscura.",
     },
     division: "inaudio",
-    media: [placeholder("project-obsidian-echoes")],
+    discipline: "audio",
+    media: gallery("project-obsidian-echoes"),
     publishedAt: "2024-11-12",
-    gridSpan: 8,
   },
   {
     id: "p-002",
@@ -66,9 +85,9 @@ export const projects: Project[] = [
       es: "Sistema de marca para un estudio de arquitectura brutalista.",
     },
     division: "invisuals",
-    media: [placeholder("project-monolith-os")],
+    discipline: "branding",
+    media: gallery("project-monolith-os"),
     publishedAt: "2024-09-04",
-    gridSpan: 4,
   },
   {
     id: "p-003",
@@ -79,9 +98,9 @@ export const projects: Project[] = [
       es: "Identidad visual generativa para un laboratorio de IA.",
     },
     division: "inlabs",
-    media: [placeholder("project-liquid-logic")],
+    discipline: "design",
+    media: gallery("project-liquid-logic"),
     publishedAt: "2024-08-20",
-    gridSpan: 4,
   },
   {
     id: "p-004",
@@ -92,9 +111,9 @@ export const projects: Project[] = [
       es: "Ingeniería de audio en vivo para un lanzamiento corporativo.",
     },
     division: "inaudio",
-    media: [placeholder("project-ether-core")],
+    discipline: "video",
+    media: gallery("project-ether-core"),
     publishedAt: "2024-07-15",
-    gridSpan: 8,
   },
   {
     id: "p-005",
@@ -105,9 +124,9 @@ export const projects: Project[] = [
       es: "Sistema de diseño sonoro para una experiencia de cine generativo.",
     },
     division: "invisuals",
-    media: [placeholder("project-modular-synthesis")],
+    discipline: "photography",
+    media: gallery("project-modular-synthesis"),
     publishedAt: "2024-05-28",
-    gridSpan: 6,
   },
   {
     id: "p-006",
@@ -118,9 +137,9 @@ export const projects: Project[] = [
       es: "Identidad en movimiento impulsada por IA para un rebrand fintech.",
     },
     division: "inlabs",
-    media: [placeholder("project-mercury-flow")],
+    discipline: "animation",
+    media: gallery("project-mercury-flow"),
     publishedAt: "2024-04-10",
-    gridSpan: 6,
   },
 ];
 

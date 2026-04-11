@@ -1,14 +1,20 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type CardKey = "inlabs" | "inaudio" | "invisuals";
 
-const CARDS: { key: CardKey; seed: string; logo: string }[] = [
-  { key: "inlabs", seed: "in-labs", logo: "/in-labs.svg" },
-  { key: "inaudio", seed: "in-audio", logo: "/in-audio.svg" },
-  { key: "invisuals", seed: "in-visuals", logo: "/in-visuals.svg" },
+const CARDS: { key: CardKey; seed: string; logo: string; href: string }[] = [
+  { key: "inlabs", seed: "in-labs", logo: "/in-labs.svg", href: "/labs" },
+  { key: "inaudio", seed: "in-audio", logo: "/in-audio.svg", href: "/audio" },
+  {
+    key: "invisuals",
+    seed: "in-visuals",
+    logo: "/in-visuals.svg",
+    href: "/visuals",
+  },
 ];
 
 export function Ecosystem() {
@@ -30,18 +36,19 @@ export function Ecosystem() {
           {CARDS.map((card) => {
             const data = t.ecosystem.cards[card.key];
             return (
-              <article
+              <Link
                 key={card.key}
-                className="group relative aspect-[4/5] w-[85vw] flex-shrink-0 cursor-pointer snap-start overflow-hidden bg-surface-container md:w-auto md:flex-shrink"
+                href={card.href}
+                className="group relative block aspect-[4/5] w-[85vw] flex-shrink-0 snap-start overflow-hidden bg-surface-container md:w-auto md:flex-shrink"
               >
                 <Image
                   src={`https://picsum.photos/seed/${card.seed}/800/1000`}
                   alt=""
                   fill
                   sizes="(min-width: 768px) 33vw, 85vw"
-                  className="absolute inset-0 h-full w-full object-cover opacity-60 grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                  className="absolute inset-0 h-full w-full object-cover opacity-70 transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/40 transition-colors duration-500 group-hover:bg-black/10" />
+                <div className="absolute inset-0 bg-black/40 transition-colors duration-500 group-hover:bg-black/20" />
                 <div className="absolute bottom-8 left-6 right-6 z-10 text-left md:bottom-12 md:left-12 md:right-12">
                   <Image
                     src={card.logo}
@@ -50,11 +57,11 @@ export function Ecosystem() {
                     height={50}
                     className="mb-3 h-6 w-auto md:mb-4 md:h-8"
                   />
-                  <p className="max-w-xs font-body text-sm text-secondary md:translate-y-4 md:opacity-0 md:transition-all md:duration-500 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+                  <p className="max-w-xs font-body text-sm text-secondary">
                     {data.description}
                   </p>
                 </div>
-              </article>
+              </Link>
             );
           })}
         </div>

@@ -12,12 +12,10 @@ export const dictionaries = {
       languageLabel: "Language",
     },
     hero: {
-      eyebrow: "EST. 2024 — DIGITAL CURATION",
       titleLine1: "INTELIGENCIA",
       titleLine2: "NATURAL",
       description:
         "We craft visual and logistical solutions with a refined human eye and the power of AI as our ally — together, we make the extraordinary possible.",
-      counter: "01/03",
     },
     ecosystem: {
       heading: "The Ecosystem",
@@ -43,26 +41,26 @@ export const dictionaries = {
       label: "Trusted By Global Innovators",
     },
     work: {
-      heading: "Curated Fragments.",
+      heading: "Featured Projects.",
       cta: "View All Work",
-      yearLabel: "Year",
-      yearValue: "2021—2024",
-      focusLabel: "Focus",
-      focusValue: "Visuals, Audio, Labs",
     },
     workPage: {
       eyebrow: "Archive / 2021—2024",
       title: "The Work.",
       intro:
-        "A living archive of selected projects across our three divisions. Each fragment is a study in restraint, intuition, and the quiet alchemy between human craft and machine.",
+        "A living archive of selected projects across photography, video, animation, design, branding, and audio. Each fragment is a study in restraint, intuition, and the quiet alchemy between human craft and machine.",
       filterLabel: "Filter",
       filters: {
         all: "All",
-        inlabs: "IN LABS",
-        inaudio: "IN AUDIO",
-        invisuals: "IN VISUALS",
+        photography: "Photography",
+        video: "Video",
+        animation: "Animation",
+        design: "Design",
+        branding: "Branding",
+        audio: "Audio",
       },
-      empty: "No projects in this division yet.",
+      empty: "No projects in this discipline yet.",
+      backToWork: "Back to Work",
       cta: {
         eyebrow: "Start a Project",
         heading: "Have a vision worth building?",
@@ -116,12 +114,10 @@ export const dictionaries = {
       languageLabel: "Idioma",
     },
     hero: {
-      eyebrow: "EST. 2024 — CURADURÍA DIGITAL",
       titleLine1: "INTELIGENCIA",
       titleLine2: "NATURAL",
       description:
         "Creamos soluciones visuales y logísticas con un ojo humano afinado y la potencia de la IA como aliada — juntos, hacemos lo extraordinario posible.",
-      counter: "01/03",
     },
     ecosystem: {
       heading: "El Ecosistema",
@@ -147,26 +143,26 @@ export const dictionaries = {
       label: "La confianza de innovadores globales",
     },
     work: {
-      heading: "Fragmentos Curados.",
+      heading: "Proyectos Destacados.",
       cta: "Ver Todo el Trabajo",
-      yearLabel: "Año",
-      yearValue: "2021—2024",
-      focusLabel: "Enfoque",
-      focusValue: "Visuals, Audio, Labs",
     },
     workPage: {
       eyebrow: "Archivo / 2021—2024",
       title: "El Trabajo.",
       intro:
-        "Un archivo vivo de proyectos seleccionados a través de nuestras tres divisiones. Cada fragmento es un estudio de contención, intuición y la alquimia silenciosa entre el oficio humano y la máquina.",
+        "Un archivo vivo de proyectos seleccionados a través de fotografía, video, animación, diseño, branding y audio. Cada fragmento es un estudio de contención, intuición y la alquimia silenciosa entre el oficio humano y la máquina.",
       filterLabel: "Filtrar",
       filters: {
         all: "Todos",
-        inlabs: "IN LABS",
-        inaudio: "IN AUDIO",
-        invisuals: "IN VISUALS",
+        photography: "Fotografía",
+        video: "Video",
+        animation: "Animación",
+        design: "Diseño",
+        branding: "Branding",
+        audio: "Audio",
       },
-      empty: "Aún no hay proyectos en esta división.",
+      empty: "Aún no hay proyectos en esta disciplina.",
+      backToWork: "Volver a Trabajos",
       cta: {
         eyebrow: "Inicia un Proyecto",
         heading: "¿Tienes una visión que valga la pena construir?",
