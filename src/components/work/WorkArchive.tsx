@@ -1,37 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import { useMemo, useState } from "react";
-import {
-  sortedProjects,
-  type Division,
-  type Project,
-} from "@/lib/data/projects";
+import { sortedProjects, type Division } from "@/lib/data/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { ProjectGrid } from "./ProjectGrid";
 
 type Filter = "all" | Division;
 
 const FILTER_KEYS: Filter[] = ["all", "inlabs", "inaudio", "invisuals"];
 
-const SPAN_CLASS: Record<NonNullable<Project["gridSpan"]>, string> = {
-  4: "md:col-span-4",
-  6: "md:col-span-6",
-  8: "md:col-span-8",
-  12: "md:col-span-12",
-};
-
-const DIVISION_LABEL: Record<Division, string> = {
-  inlabs: "IN LABS",
-  inaudio: "IN AUDIO",
-  invisuals: "IN VISUALS",
-};
-
-function formatYear(iso: string): string {
-  return iso.slice(0, 4);
-}
-
 export function WorkArchive() {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
 
   const projects = useMemo(
@@ -93,43 +72,7 @@ export function WorkArchive() {
             {t.workPage.empty}
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-x-4 gap-y-16 md:grid-cols-12 md:gap-y-24">
-            {projects.map((project) => {
-              const cover = project.media[0];
-              const coverUrl = cover?.type === "image" ? cover.url : undefined;
-              const span = SPAN_CLASS[project.gridSpan ?? 4];
-              return (
-                <article
-                  key={project.id}
-                  className={`group flex flex-col ${span}`}
-                >
-                  <div className="relative h-[55vw] w-full overflow-hidden bg-surface-container-low md:h-[42vh]">
-                    {coverUrl && (
-                      <Image
-                        src={coverUrl}
-                        alt={project.title[locale]}
-                        fill
-                        sizes="(min-width: 768px) 66vw, 100vw"
-                        className="h-full w-full object-cover grayscale transition-all duration-[1500ms] group-hover:scale-[1.03] group-hover:grayscale-0"
-                      />
-                    )}
-                  </div>
-                  <div className="mt-6 flex flex-col gap-3">
-                    <span className="font-label text-[10px] uppercase tracking-widest text-primary/40">
-                      {DIVISION_LABEL[project.division]} /{" "}
-                      {formatYear(project.publishedAt)}
-                    </span>
-                    <h2 className="font-headline text-2xl font-bold uppercase tracking-tight md:text-3xl">
-                      {project.title[locale]}
-                    </h2>
-                    <p className="max-w-md font-body text-sm leading-relaxed text-primary/60">
-                      {project.description[locale]}
-                    </p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <ProjectGrid projects={projects} />
         )}
       </div>
     </section>

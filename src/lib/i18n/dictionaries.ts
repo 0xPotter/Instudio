@@ -2,7 +2,7 @@ export const dictionaries = {
   en: {
     nav: {
       work: "Work",
-      studio: "Studio",
+      visuals: "Visuals",
       audio: "Audio",
       labs: "Labs",
       contact: "Contact",
@@ -72,6 +72,29 @@ export const dictionaries = {
       },
       systemStatus: "Archive Operational",
     },
+    divisionPage: {
+      filteredBy: "Filtered by",
+      displaying: "Displaying",
+      projectsLabel: "Projects",
+      empty: "No projects in this division yet.",
+      divisions: {
+        inlabs: {
+          name: "IN LABS",
+          intro:
+            "Where artificial intelligence meets human craft. We design generative systems, prototypes, and creative tools that expand what brands can imagine — and ship.",
+        },
+        inaudio: {
+          name: "IN AUDIO",
+          intro:
+            "Sonic identities, music production, mixing, mastering, and live event engineering. We sculpt sound with the same precision a director gives a frame.",
+        },
+        invisuals: {
+          name: "IN VISUALS",
+          intro:
+            "Curating high-end visual narratives through the precision of cinematography and the stillness of photography. We translate complex brand stories into evocative imagery that resonates with depth and authority.",
+        },
+      },
+    },
     footer: {
       connect: "Connect",
       contact: "Contact",
@@ -83,7 +106,7 @@ export const dictionaries = {
   es: {
     nav: {
       work: "Trabajos",
-      studio: "Studio",
+      visuals: "Visuals",
       audio: "Audio",
       labs: "Labs",
       contact: "Contacto",
@@ -152,6 +175,29 @@ export const dictionaries = {
         action: "Contáctanos",
       },
       systemStatus: "Archivo Operativo",
+    },
+    divisionPage: {
+      filteredBy: "Filtrado por",
+      displaying: "Mostrando",
+      projectsLabel: "Proyectos",
+      empty: "Aún no hay proyectos en esta división.",
+      divisions: {
+        inlabs: {
+          name: "IN LABS",
+          intro:
+            "Donde la inteligencia artificial se encuentra con el oficio humano. Diseñamos sistemas generativos, prototipos y herramientas creativas que expanden lo que las marcas pueden imaginar — y lanzar.",
+        },
+        inaudio: {
+          name: "IN AUDIO",
+          intro:
+            "Identidades sonoras, producción musical, mezcla, master e ingeniería de audio en vivo. Esculpimos el sonido con la misma precisión que un director le da a un cuadro.",
+        },
+        invisuals: {
+          name: "IN VISUALS",
+          intro:
+            "Curaduría de narrativas visuales de alto nivel a través de la precisión de la cinematografía y la quietud de la fotografía. Traducimos historias de marca complejas en imágenes evocadoras con profundidad y autoridad.",
+        },
+      },
     },
     footer: {
       connect: "Conectar",

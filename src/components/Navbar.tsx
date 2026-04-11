@@ -8,9 +8,9 @@ import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 const NAV_ITEMS = [
   { key: "work", href: "/work" },
-  { key: "studio", href: "/#studio" },
-  { key: "audio", href: "/#audio" },
-  { key: "labs", href: "/#labs" },
+  { key: "visuals", href: "/visuals" },
+  { key: "audio", href: "/audio" },
+  { key: "labs", href: "/labs" },
   { key: "contact", href: "/#contact" },
 ] as const;
 
