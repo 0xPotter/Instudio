@@ -39,8 +39,8 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </p>
       </header>
 
-      {/* Image gallery — stacked tight */}
-      <div className="flex w-full flex-col">
+      {/* Image gallery — 1 col mobile, 2 cols desktop, tight gap */}
+      <div className="grid w-full grid-cols-1 gap-px md:grid-cols-2">
         {images.map((media, idx) => (
           <div
             key={`${project.id}-img-${idx}`}
@@ -54,8 +54,8 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                   : `${project.title[locale]} — ${idx + 1}`
               }
               fill
-              priority={idx === 0}
-              sizes="100vw"
+              priority={idx < 2}
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
             />
           </div>

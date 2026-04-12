@@ -11,30 +11,32 @@ function formatYear(iso: string): string {
 
 export function FeaturedProjects() {
   const { t, locale } = useLocale();
+  // TODO: switch to projects.filter(p => p.featured) once admin panel
+  // can mark projects as featured. For now, surface the most recent.
   const featured = sortedProjects.slice(0, 6);
 
   return (
     <section
       id="work"
-      className="overflow-hidden bg-surface py-24 md:py-32"
+      className="overflow-hidden bg-surface py-20 md:py-24"
       aria-labelledby="featured-projects-heading"
     >
-      <div className="mx-auto mb-12 flex max-w-screen-3xl items-end justify-between gap-8 px-6 md:mb-16 md:px-8">
+      <div className="mx-auto mb-8 flex max-w-screen-3xl items-center justify-between gap-8 px-6 md:mb-10 md:px-8">
         <h2
           id="featured-projects-heading"
-          className="font-headline text-4xl font-black uppercase tracking-tighter md:text-6xl"
+          className="font-headline text-xl font-black uppercase tracking-tighter opacity-40 md:text-2xl"
         >
           {t.work.heading}
         </h2>
         <Link
           href="/work"
-          className="hidden whitespace-nowrap rounded-full border border-primary px-8 py-3 font-label text-[11px] uppercase tracking-widest text-primary transition-all duration-300 hover:bg-primary hover:text-surface md:inline-block"
+          className="font-label text-[10px] uppercase tracking-[0.2em] text-primary/60 transition-colors hover:text-primary"
         >
-          {t.work.cta}
+          {t.work.cta} →
         </Link>
       </div>
 
-      <div className="no-scrollbar flex snap-x snap-mandatory gap-1 overflow-x-auto px-6 pb-2 md:px-8">
+      <div className="no-scrollbar flex snap-x snap-mandatory gap-px overflow-x-auto px-6 pb-2 md:px-8">
         {featured.map((project, idx) => {
           const cover = project.media[0];
           const coverUrl = cover?.type === "image" ? cover.url : undefined;
@@ -42,7 +44,7 @@ export function FeaturedProjects() {
             <Link
               key={project.id}
               href={`/work/${project.slug}`}
-              className="group relative flex aspect-[3/2] w-[85vw] flex-shrink-0 snap-start overflow-hidden bg-surface-container-low sm:w-[60vw] md:w-[44vw] lg:w-[32vw]"
+              className="group relative flex aspect-[4/5] w-[78vw] flex-shrink-0 snap-start overflow-hidden bg-surface-container-low sm:w-[52vw] md:w-[36vw] lg:w-[26vw]"
             >
               {coverUrl && (
                 <Image
@@ -50,8 +52,8 @@ export function FeaturedProjects() {
                   alt={project.title[locale]}
                   fill
                   priority={idx < 2}
-                  sizes="(min-width: 1024px) 32vw, (min-width: 768px) 44vw, (min-width: 640px) 60vw, 85vw"
-                  className="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-[1.04]"
+                  sizes="(min-width: 1024px) 26vw, (min-width: 768px) 36vw, (min-width: 640px) 52vw, 78vw"
+                  className="h-full w-full object-cover grayscale transition-all duration-[1500ms] group-hover:scale-[1.04] group-hover:grayscale-0"
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
@@ -60,22 +62,13 @@ export function FeaturedProjects() {
                   {t.workPage.filters[project.discipline]} /{" "}
                   {formatYear(project.publishedAt)}
                 </span>
-                <h3 className="font-headline text-xl font-bold uppercase tracking-tight text-primary md:text-2xl">
+                <h3 className="font-headline text-lg font-bold uppercase tracking-tight text-primary md:text-xl">
                   {project.title[locale]}
                 </h3>
               </div>
             </Link>
           );
         })}
-      </div>
-
-      <div className="mx-auto mt-12 flex max-w-screen-3xl px-6 md:hidden md:px-8">
-        <Link
-          href="/work"
-          className="inline-block rounded-full border border-primary px-8 py-3 font-label text-[11px] uppercase tracking-widest text-primary transition-all duration-300 hover:bg-primary hover:text-surface"
-        >
-          {t.work.cta}
-        </Link>
       </div>
     </section>
   );

@@ -7,6 +7,8 @@ import { ProjectGrid } from "./ProjectGrid";
 
 type Filter = "all" | Discipline;
 
+// "audio" intentionally hidden from /work — audio projects are surfaced
+// from the /audio division page only.
 const FILTER_KEYS: Filter[] = [
   "all",
   "photography",
@@ -14,20 +16,19 @@ const FILTER_KEYS: Filter[] = [
   "animation",
   "design",
   "branding",
-  "audio",
 ];
 
 export function WorkArchive() {
   const { t } = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
 
-  const projects = useMemo(
-    () =>
-      filter === "all"
-        ? sortedProjects
-        : sortedProjects.filter((p) => p.discipline === filter),
-    [filter],
-  );
+  const projects = useMemo(() => {
+    // Audio projects don't surface on /work; they live on /audio.
+    const visible = sortedProjects.filter((p) => p.discipline !== "audio");
+    return filter === "all"
+      ? visible
+      : visible.filter((p) => p.discipline === filter);
+  }, [filter]);
 
   return (
     <section className="bg-surface pb-24 pt-32 md:pb-32 md:pt-40">

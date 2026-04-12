@@ -10,7 +10,7 @@ export function ClientsTicker() {
   const renderSet = (key: string) => (
     <div
       key={key}
-      className="flex items-center gap-24 py-4 pr-24"
+      className="flex items-center gap-24 py-2 pr-24"
       aria-hidden={key !== "primary"}
     >
       {clients.map((client) => (
@@ -35,8 +35,8 @@ export function ClientsTicker() {
   );
 
   return (
-    <section className="overflow-hidden border-y border-outline-variant/10 bg-surface py-16 md:py-20">
-      <div className="mx-auto mb-10 flex max-w-screen-3xl justify-center px-6 md:px-8">
+    <section className="overflow-hidden border-y border-outline-variant/10 bg-surface py-10 md:py-12">
+      <div className="mx-auto mb-6 flex max-w-screen-3xl justify-center px-6 md:px-8">
         <span className="font-label text-[10px] uppercase tracking-[0.3em] text-primary/60">
           {t.clients.label}
         </span>

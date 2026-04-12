@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { key: "visuals", href: "/visuals" },
   { key: "audio", href: "/audio" },
   { key: "labs", href: "/labs" },
-  { key: "contact", href: "/#contact" },
+  { key: "contact", href: "/contact" },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {

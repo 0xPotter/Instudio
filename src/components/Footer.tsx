@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 const SOCIAL_LINKS = [
@@ -14,7 +15,6 @@ export function Footer() {
 
   return (
     <footer
-      id="contact"
       className="w-full border-t border-neutral-800/10 bg-neutral-950"
     >
       <div className="flex w-full flex-col items-start justify-between gap-16 px-6 py-16 md:flex-row md:items-end md:gap-8 md:px-8 md:py-20">

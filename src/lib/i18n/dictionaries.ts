@@ -12,8 +12,8 @@ export const dictionaries = {
       languageLabel: "Language",
     },
     hero: {
-      titleLine1: "INTELIGENCIA",
-      titleLine2: "NATURAL",
+      titleLine1: "NATURAL",
+      titleLine2: "INTELLIGENCE",
       description:
         "We craft visual and logistical solutions with a refined human eye and the power of AI as our ally — together, we make the extraordinary possible.",
     },
@@ -99,6 +99,26 @@ export const dictionaries = {
       tagline: "Inteligencia Natural",
       rights: "© 2024 IN Studio. All rights reserved.",
       systemStatus: "All Systems Operational",
+    },
+    contactPage: {
+      eyebrow: "Contact / Inquiries",
+      title: "Let's Build.",
+      intro:
+        "Tell us about your project — a launch, a film, an album, an experiment. We read every message.",
+      directLabel: "Direct",
+      phoneLabel: "Phone",
+      emailLabel: "Email",
+      socialLabel: "Social",
+      formHeading: "Send a message",
+      form: {
+        name: "Name",
+        email: "Email",
+        subject: "Subject",
+        message: "Message",
+        submit: "Send Message",
+        sending: "Sending…",
+        sent: "Message received. We'll be in touch.",
+      },
     },
   },
   es: {
@@ -201,6 +221,26 @@ export const dictionaries = {
       tagline: "Inteligencia Natural",
       rights: "© 2024 IN Studio. Todos los derechos reservados.",
       systemStatus: "Todos los Sistemas Operativos",
+    },
+    contactPage: {
+      eyebrow: "Contacto / Consultas",
+      title: "Construyamos.",
+      intro:
+        "Cuéntanos sobre tu proyecto — un lanzamiento, un film, un álbum, un experimento. Leemos cada mensaje.",
+      directLabel: "Directo",
+      phoneLabel: "Teléfono",
+      emailLabel: "Correo",
+      socialLabel: "Redes",
+      formHeading: "Envíanos un mensaje",
+      form: {
+        name: "Nombre",
+        email: "Correo",
+        subject: "Asunto",
+        message: "Mensaje",
+        submit: "Enviar Mensaje",
+        sending: "Enviando…",
+        sent: "Mensaje recibido. Pronto te contactamos.",
+      },
     },
   },
 } as const;
