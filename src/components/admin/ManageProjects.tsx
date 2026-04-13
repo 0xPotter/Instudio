@@ -2,57 +2,67 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { sortedProjects, type Project } from "@/lib/data/projects";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  getProjects,
+  toggleFeatured,
+  archiveProject,
+  deleteProject,
+  type FirestoreProject,
+  type ProjectStatus,
+} from "@/lib/firebase/projects";
 import { AdminShell } from "./AdminShell";
 
-type Status = "published" | "draft" | "archived";
-
-type AdminProject = Project & {
-  status: Status;
-  featured: boolean;
-};
-
-// Mock admin state — replace with Supabase query in next iteration.
-function withAdminMeta(p: Project, idx: number): AdminProject {
-  return {
-    ...p,
-    status: idx === 0 ? "draft" : "published",
-    featured: idx < 3,
-  };
-}
-
-const STATUS_STYLES: Record<Status, string> = {
+const STATUS_STYLES: Record<ProjectStatus, string> = {
   published: "border-emerald-500/40 text-emerald-400",
   draft: "border-amber-500/40 text-amber-400",
   archived: "border-neutral-700 text-neutral-500",
 };
 
 export function ManageProjects() {
-  const [items, setItems] = useState<AdminProject[]>(() =>
-    sortedProjects.map(withAdminMeta),
-  );
-  const [filter, setFilter] = useState<"all" | Status>("all");
+  const [items, setItems] = useState<FirestoreProject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | ProjectStatus>("all");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      setItems(await getProjects());
+    } catch (err) {
+      console.error("Failed to load projects:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const visible = useMemo(
     () => (filter === "all" ? items : items.filter((p) => p.status === filter)),
     [items, filter],
   );
 
-  function toggleFeatured(id: string) {
+  async function handleToggleFeatured(id: string, current: boolean) {
+    await toggleFeatured(id, current);
     setItems((prev) =>
       prev.map((p) => (p.id === id ? { ...p, featured: !p.featured } : p)),
     );
   }
 
-  function archive(id: string) {
+  async function handleArchive(id: string) {
+    await archiveProject(id);
     setItems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "archived" } : p)),
+      prev.map((p) =>
+        p.id === id ? { ...p, status: "archived" as const } : p,
+      ),
     );
   }
 
-  function remove(id: string) {
+  async function handleDelete(id: string) {
     if (!confirm("Delete this project? This cannot be undone.")) return;
+    await deleteProject(id);
     setItems((prev) => prev.filter((p) => p.id !== id));
   }
 
@@ -98,11 +108,27 @@ export function ManageProjects() {
         })}
       </div>
 
-      {/* Table */}
-      {visible.length === 0 ? (
-        <p className="py-24 text-center font-label text-sm uppercase tracking-widest text-primary/40">
-          No projects in this view.
+      {/* Loading state */}
+      {loading ? (
+        <p className="py-24 text-center font-label text-sm uppercase tracking-widest text-primary/40 animate-pulse">
+          Loading projects…
         </p>
+      ) : visible.length === 0 ? (
+        <div className="flex flex-col items-center gap-6 py-24">
+          <p className="font-label text-sm uppercase tracking-widest text-primary/40">
+            {items.length === 0
+              ? "No projects yet. Create your first one."
+              : "No projects in this view."}
+          </p>
+          {items.length === 0 && (
+            <Link
+              href="/admin/create"
+              className="inline-flex items-center gap-2 rounded-full border border-primary px-6 py-3 font-label text-[10px] uppercase tracking-widest text-primary transition-all hover:bg-primary hover:text-surface"
+            >
+              + Create Project
+            </Link>
+          )}
+        </div>
       ) : (
         <div className="border border-outline-variant/10">
           {/* Header row */}
@@ -118,7 +144,8 @@ export function ManageProjects() {
           <ul className="divide-y divide-outline-variant/10">
             {visible.map((project) => {
               const cover = project.media[0];
-              const coverUrl = cover?.type === "image" ? cover.url : undefined;
+              const coverUrl =
+                cover?.type === "image" ? cover.url : undefined;
               return (
                 <li
                   key={project.id}
@@ -160,9 +187,7 @@ export function ManageProjects() {
                   </span>
 
                   <span
-                    className={`inline-flex w-fit rounded-full border px-3 py-1 font-label text-[9px] uppercase tracking-widest ${
-                      STATUS_STYLES[project.status]
-                    }`}
+                    className={`inline-flex w-fit rounded-full border px-3 py-1 font-label text-[9px] uppercase tracking-widest ${STATUS_STYLES[project.status]}`}
                   >
                     {project.status}
                   </span>
@@ -170,27 +195,23 @@ export function ManageProjects() {
                   <div className="flex flex-wrap items-center gap-2 md:justify-end">
                     <button
                       type="button"
-                      onClick={() => toggleFeatured(project.id)}
+                      onClick={() =>
+                        handleToggleFeatured(project.id, project.featured)
+                      }
                       className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 transition-colors hover:border-primary hover:text-primary"
                     >
                       {project.featured ? "Unfeature" : "Feature"}
                     </button>
-                    <Link
-                      href={`/admin/create?id=${project.id}`}
-                      className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 transition-colors hover:border-primary hover:text-primary"
-                    >
-                      Edit
-                    </Link>
                     <button
                       type="button"
-                      onClick={() => archive(project.id)}
+                      onClick={() => handleArchive(project.id)}
                       className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 transition-colors hover:border-primary hover:text-primary"
                     >
                       Archive
                     </button>
                     <button
                       type="button"
-                      onClick={() => remove(project.id)}
+                      onClick={() => handleDelete(project.id)}
                       className="rounded border border-red-500/30 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-red-400/80 transition-colors hover:border-red-400 hover:text-red-400"
                     >
                       Delete

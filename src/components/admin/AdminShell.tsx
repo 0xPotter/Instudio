@@ -2,19 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { useAuth } from "@/lib/firebase/AuthProvider";
+import { signOut } from "@/lib/firebase/auth";
 
 const NAV = [
   { label: "Manage", href: "/admin" },
   { label: "Create", href: "/admin/create" },
 ];
-
-const ADMIN_USER = {
-  name: "Jeremy Campos",
-  role: "Founder",
-  initials: "JC",
-};
 
 type AdminShellProps = {
   title: string;
@@ -30,6 +26,22 @@ export function AdminShell({
   children,
 }: AdminShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const displayName = user?.displayName ?? "Admin";
+  const initials = displayName
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  const photoURL = user?.photoURL;
+
+  async function handleSignOut() {
+    await signOut();
+    router.replace("/admin/login");
+  }
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -82,24 +94,35 @@ export function AdminShell({
 
           <div className="mt-auto flex flex-col gap-4">
             <div className="flex items-center gap-3 border-t border-neutral-900 pt-6">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-800 font-label text-[10px] font-bold uppercase tracking-widest text-white">
-                {ADMIN_USER.initials}
-              </div>
+              {photoURL ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={photoURL}
+                  alt={displayName}
+                  className="h-9 w-9 rounded-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-800 font-label text-[10px] font-bold uppercase tracking-widest text-white">
+                  {initials}
+                </div>
+              )}
               <div className="flex flex-col leading-tight">
                 <span className="font-body text-sm text-white">
-                  {ADMIN_USER.name}
+                  {displayName}
                 </span>
                 <span className="font-label text-[9px] uppercase tracking-widest text-neutral-500">
-                  {ADMIN_USER.role}
+                  {user?.email ?? ""}
                 </span>
               </div>
             </div>
-            <Link
-              href="/admin/login"
-              className="font-label text-[10px] uppercase tracking-widest text-neutral-500 hover:text-white"
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="text-left font-label text-[10px] uppercase tracking-widest text-neutral-500 hover:text-white"
             >
               Sign Out →
-            </Link>
+            </button>
           </div>
         </div>
       </aside>

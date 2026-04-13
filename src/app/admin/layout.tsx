@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthProvider } from "@/lib/firebase/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Admin — IN Studio",
@@ -10,5 +11,9 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="min-h-screen bg-surface text-on-surface">{children}</div>;
+  return (
+    <div className="min-h-screen bg-surface text-on-surface">
+      <AuthProvider>{children}</AuthProvider>
+    </div>
+  );
 }

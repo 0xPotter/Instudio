@@ -1,7 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
-import type { Discipline, Division } from "@/lib/data/projects";
+import type { Discipline, Division, ProjectMedia } from "@/lib/data/projects";
+import { createProject, type ProjectStatus } from "@/lib/firebase/projects";
+import { uploadProjectFile } from "@/lib/firebase/storage";
 import { AdminShell } from "./AdminShell";
 
 const DIVISIONS: { value: Division; label: string }[] = [
@@ -19,62 +22,122 @@ const DISCIPLINES: Discipline[] = [
   "audio",
 ];
 
-type UploadedFile = {
+type LocalFile = {
   id: string;
-  name: string;
-  size: number;
+  file: File;
   previewUrl: string;
 };
 
 export function CreateProject() {
-  const [files, setFiles] = useState<UploadedFile[]>([]);
-  const [hero, setHero] = useState<UploadedFile | null>(null);
+  const router = useRouter();
+  const [heroFile, setHeroFile] = useState<LocalFile | null>(null);
+  const [galleryFiles, setGalleryFiles] = useState<LocalFile[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  function handleFiles(event: ChangeEvent<HTMLInputElement>) {
-    const incoming = event.target.files;
-    if (!incoming) return;
-    const next: UploadedFile[] = Array.from(incoming).map((file) => ({
-      id: `${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`,
-      name: file.name,
-      size: file.size,
-      previewUrl: URL.createObjectURL(file),
-    }));
-    setFiles((prev) => [...prev, ...next]);
-    event.target.value = "";
-  }
+  const [progress, setProgress] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   function handleHero(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
-    setHero({
+    setHeroFile({
       id: `${file.name}-${file.lastModified}`,
-      name: file.name,
-      size: file.size,
+      file,
       previewUrl: URL.createObjectURL(file),
     });
     event.target.value = "";
   }
 
-  function removeFile(id: string) {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
+  function handleGallery(event: ChangeEvent<HTMLInputElement>) {
+    const incoming = event.target.files;
+    if (!incoming) return;
+    const next: LocalFile[] = Array.from(incoming).map((file) => ({
+      id: `${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setGalleryFiles((prev) => [...prev, ...next]);
+    event.target.value = "";
   }
 
-  const [intent, setIntent] = useState<"publish" | "draft">("publish");
+  function removeGalleryFile(id: string) {
+    setGalleryFiles((prev) => prev.filter((f) => f.id !== id));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
-    setFeedback(null);
-    // TODO: replace with real upload + insert (Supabase Storage + projects table).
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setSubmitting(false);
-    setFeedback(
-      intent === "publish"
-        ? "Published. (mock — wire backend to persist)"
-        : "Draft saved. (mock — wire backend to persist)",
-    );
+    setError(null);
+
+    try {
+      const form = new FormData(event.currentTarget);
+      const status: ProjectStatus = form.get("intent") === "draft" ? "draft" : "published";
+
+      const titleEn = (form.get("title-en") as string).trim();
+      const titleEs = (form.get("title-es") as string).trim();
+      const slug = (form.get("slug") as string).trim();
+
+      if (!titleEn || !slug) {
+        setError("Title (EN) and Slug are required.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Use a temporary ID for upload paths, then create the doc with that ID.
+      const tempId = `${slug}-${Date.now()}`;
+
+      // 1. Upload hero
+      let media: ProjectMedia[] = [];
+      if (heroFile) {
+        setProgress("Uploading hero image…");
+        const url = await uploadProjectFile(tempId, heroFile.file, "hero");
+        media.push({ type: "image", url, alt: titleEn });
+      }
+
+      // 2. Upload gallery
+      for (let i = 0; i < galleryFiles.length; i++) {
+        setProgress(`Uploading gallery ${i + 1}/${galleryFiles.length}…`);
+        const url = await uploadProjectFile(
+          tempId,
+          galleryFiles[i].file,
+          "gallery",
+        );
+        media.push({ type: "image", url });
+      }
+
+      // 3. Add video embed if provided
+      const videoLink = (form.get("video-link") as string)?.trim();
+      if (videoLink) {
+        media.push({ type: "embed", url: videoLink });
+      }
+
+      // 4. Create Firestore document
+      setProgress("Saving project…");
+      await createProject({
+        slug,
+        title: { en: titleEn, es: titleEs || titleEn },
+        description: {
+          en: (form.get("description-en") as string)?.trim() || "",
+          es: (form.get("description-es") as string)?.trim() || "",
+        },
+        division: (form.get("division") as Division) || "inlabs",
+        discipline: (form.get("discipline") as Discipline) || "design",
+        media,
+        externalLink: (form.get("external-link") as string)?.trim() || undefined,
+        publishedAt:
+          (form.get("published-at") as string) ||
+          new Date().toISOString().slice(0, 10),
+        featured: form.get("featured") === "on",
+        status,
+      });
+
+      setProgress("");
+      router.push("/admin");
+    } catch (err) {
+      console.error("Create project failed:", err);
+      setError("Something went wrong. Check the console and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -97,7 +160,6 @@ export function CreateProject() {
                 id="title-es"
                 label="Title (ES)"
                 placeholder="Ecos de Obsidiana"
-                required
               />
             </div>
             <TextField
@@ -110,13 +172,11 @@ export function CreateProject() {
               id="description-en"
               label="Description (EN)"
               placeholder="Spatial audio installation exploring…"
-              required
             />
             <Textarea
               id="description-es"
               label="Description (ES)"
               placeholder="Instalación de audio espacial explorando…"
-              required
             />
           </Section>
 
@@ -126,25 +186,25 @@ export function CreateProject() {
               <span className="mb-3 block font-label text-[10px] uppercase tracking-[0.3em] text-primary/40">
                 Hero Image
               </span>
-              {hero ? (
+              {heroFile ? (
                 <div className="flex items-center gap-4 border border-outline-variant/10 p-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={hero.previewUrl}
-                    alt={hero.name}
+                    src={heroFile.previewUrl}
+                    alt={heroFile.file.name}
                     className="h-20 w-20 object-cover"
                   />
                   <div className="flex flex-1 flex-col gap-1">
                     <span className="font-body text-sm text-primary">
-                      {hero.name}
+                      {heroFile.file.name}
                     </span>
                     <span className="font-label text-[10px] uppercase tracking-widest text-primary/40">
-                      {(hero.size / 1024).toFixed(1)} KB
+                      {(heroFile.file.size / 1024).toFixed(1)} KB
                     </span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setHero(null)}
+                    onClick={() => setHeroFile(null)}
                     className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 hover:border-primary hover:text-primary"
                   >
                     Replace
@@ -167,27 +227,27 @@ export function CreateProject() {
               <UploadDropzone
                 id="gallery-upload"
                 multiple
-                onChange={handleFiles}
-                hint="Drop images and videos. Reorder later."
+                onChange={handleGallery}
+                hint="Drop images. They appear in the order uploaded."
               />
-              {files.length > 0 && (
+              {galleryFiles.length > 0 && (
                 <ul className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-                  {files.map((file) => (
+                  {galleryFiles.map((f) => (
                     <li
-                      key={file.id}
+                      key={f.id}
                       className="group relative aspect-square overflow-hidden border border-outline-variant/10 bg-surface-container-low"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={file.previewUrl}
-                        alt={file.name}
+                        src={f.previewUrl}
+                        alt={f.file.name}
                         className="h-full w-full object-cover"
                       />
                       <button
                         type="button"
-                        onClick={() => removeFile(file.id)}
+                        onClick={() => removeGalleryFile(f.id)}
                         className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 font-label text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100"
-                        aria-label={`Remove ${file.name}`}
+                        aria-label={`Remove ${f.file.name}`}
                       >
                         ×
                       </button>
@@ -259,25 +319,25 @@ export function CreateProject() {
           <div className="flex flex-col gap-3">
             <button
               type="submit"
-              onClick={() => setIntent("publish")}
+              name="intent"
+              value="publish"
               disabled={submitting}
               className="w-full rounded-full bg-primary py-4 font-label text-[11px] uppercase tracking-widest text-surface transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting && intent === "publish"
-                ? "Publishing…"
-                : "Publish Project"}
+              {submitting ? progress || "Publishing…" : "Publish Project"}
             </button>
             <button
               type="submit"
-              onClick={() => setIntent("draft")}
+              name="intent"
+              value="draft"
               disabled={submitting}
               className="w-full rounded-full border border-primary/30 py-4 font-label text-[11px] uppercase tracking-widest text-primary/70 transition-all hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting && intent === "draft" ? "Saving…" : "Save Draft"}
+              {submitting ? progress || "Saving…" : "Save Draft"}
             </button>
-            {feedback && (
-              <p className="text-center font-label text-[10px] uppercase tracking-widest text-emerald-400">
-                {feedback}
+            {error && (
+              <p className="text-center font-label text-[10px] uppercase tracking-widest text-red-400">
+                {error}
               </p>
             )}
           </div>
@@ -287,7 +347,7 @@ export function CreateProject() {
   );
 }
 
-/* ───────── helpers ───────── */
+/* ───────── shared form helpers ───────── */
 
 function Section({
   label,
