@@ -1,10 +1,10 @@
 /**
  * Cloudflare Workers config for IN Studio.
  *
- * Deploys the Next.js static export (`out/`) as a static-asset Worker.
- * No server-side runtime — every page is pre-rendered HTML, the admin
- * talks to Firebase entirely from the client. We don't define `main`
- * because there's no Worker code; the runtime just serves files.
+ * Serves the Next.js static export (`out/`) as static assets, with a
+ * thin Worker script that handles dynamic /work/[slug] routing so that
+ * projects created via the admin panel have working detail pages without
+ * requiring a site rebuild.
  *
  * Docs: https://developers.cloudflare.com/workers/static-assets/
  */
@@ -12,8 +12,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "instudio",
   "compatibility_date": "2025-04-01",
+  "main": "./worker.ts",
   "assets": {
     "directory": "./out",
-    "not_found_handling": "404-page"
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
   }
 }

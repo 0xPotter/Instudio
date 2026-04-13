@@ -2,42 +2,73 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { type Project } from "@/lib/data/projects";
 import {
   getProjectBySlug,
   type FirestoreProject,
 } from "@/lib/firebase/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
-type ProjectDetailProps = {
-  /** Static fallback passed by the server component at build time. */
-  project: Project;
-};
-
 function formatYear(iso: string): string {
   return iso.slice(0, 4);
 }
 
-export function ProjectDetail({ project: staticProject }: ProjectDetailProps) {
+export function ProjectDetail() {
   const { t, locale } = useLocale();
-  const [project, setProject] = useState<Project | FirestoreProject>(
-    staticProject,
-  );
+  const pathname = usePathname();
+  const slug = pathname.split("/").pop() || "";
 
-  // Upgrade to live Firestore data after hydration so edits are reflected
-  // without rebuilding the static export.
+  const [project, setProject] = useState<FirestoreProject | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
   useEffect(() => {
-    getProjectBySlug(staticProject.slug).then((live) => {
-      if (live) setProject(live);
-    });
-  }, [staticProject.slug]);
+    if (!slug) return;
+    setLoading(true);
+    setNotFound(false);
+    getProjectBySlug(slug)
+      .then((p) => {
+        if (p) {
+          setProject(p);
+        } else {
+          setNotFound(true);
+        }
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-surface pt-32">
+        <span className="font-label text-[10px] uppercase tracking-[0.3em] text-primary/40 animate-pulse">
+          Loading project…
+        </span>
+      </div>
+    );
+  }
+
+  if (notFound || !project) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 bg-surface pt-32">
+        <span className="font-label text-sm uppercase tracking-widest text-primary/40">
+          Project not found
+        </span>
+        <Link
+          href="/work"
+          className="font-label text-[10px] uppercase tracking-[0.3em] text-primary/60 transition-colors hover:text-primary"
+        >
+          ← Back to Work
+        </Link>
+      </div>
+    );
+  }
 
   const images = project.media.filter((m) => m.type === "image");
 
   return (
     <article className="bg-surface pb-32 pt-32 md:pt-40">
-      {/* Header */}
       <header className="container mx-auto max-w-screen-3xl px-6 pb-16 md:px-8 md:pb-20">
         <Link
           href="/work"
@@ -57,30 +88,31 @@ export function ProjectDetail({ project: staticProject }: ProjectDetailProps) {
         </p>
       </header>
 
-      {/* Image gallery — 1 col mobile, 2 cols desktop, tight gap */}
-      <div className="grid w-full grid-cols-1 gap-px md:grid-cols-2">
-        {images.map((media, idx) => (
-          <div
-            key={`${project.id}-img-${idx}`}
-            className="relative aspect-[3/2] w-full overflow-hidden bg-surface-container-low"
-          >
-            <Image
-              src={media.url}
-              alt={
-                media.type === "image" && media.alt
-                  ? media.alt
-                  : `${project.title[locale]} — ${idx + 1}`
-              }
-              fill
-              priority={idx < 2}
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-        ))}
-      </div>
+      {images.length > 0 && (
+        <div className="grid w-full grid-cols-1 gap-px md:grid-cols-2">
+          {images.map((media, idx) => (
+            <div
+              key={`img-${idx}`}
+              className="relative aspect-[3/2] w-full overflow-hidden bg-surface-container-low"
+            >
+              <Image
+                src={media.url}
+                alt={
+                  media.type === "image" && media.alt
+                    ? media.alt
+                    : `${project.title[locale]} — ${idx + 1}`
+                }
+                fill
+                priority={idx < 2}
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
-      {project.externalLink && (
+      {project.externalLink && project.externalLink.length > 0 && (
         <div className="container mx-auto max-w-screen-3xl px-6 pt-20 md:px-8">
           <a
             href={project.externalLink}
