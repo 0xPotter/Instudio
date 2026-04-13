@@ -7,6 +7,16 @@ import { createProject, type ProjectStatus } from "@/lib/firebase/projects";
 import { uploadProjectFile } from "@/lib/firebase/storage";
 import { AdminShell } from "./AdminShell";
 
+/** Convert any string into a URL-safe slug: lowercase, ascii, hyphens. */
+function toSlug(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // strip accents
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // non-alphanumeric → hyphen
+    .replace(/^-+|-+$/g, ""); // trim leading/trailing hyphens
+}
+
 const DIVISIONS: { value: Division; label: string }[] = [
   { value: "inlabs", label: "IN LABS" },
   { value: "inaudio", label: "IN AUDIO" },
@@ -74,10 +84,19 @@ export function CreateProject() {
 
       const titleEn = (form.get("title-en") as string).trim();
       const titleEs = (form.get("title-es") as string).trim();
-      const slug = (form.get("slug") as string).trim();
+      const rawSlug = (form.get("slug") as string).trim();
 
-      if (!titleEn || !slug) {
-        setError("Title (EN) and Slug are required.");
+      if (!titleEn) {
+        setError("Title (EN) is required.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Auto-generate a URL-safe slug from the input or title.
+      const slug = toSlug(rawSlug || titleEn);
+
+      if (!slug) {
+        setError("Could not generate a valid slug.");
         setSubmitting(false);
         return;
       }
@@ -164,9 +183,8 @@ export function CreateProject() {
             </div>
             <TextField
               id="slug"
-              label="Slug"
+              label="Slug (optional — auto-generated from title)"
               placeholder="obsidian-echoes"
-              required
             />
             <Textarea
               id="description-en"

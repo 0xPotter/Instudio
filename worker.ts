@@ -9,41 +9,62 @@
  */
 
 interface Env {
-  ASSETS: { fetch(request: Request): Promise<Response> };
+  ASSETS: { fetch(input: RequestInfo): Promise<Response> };
+}
+
+async function tryAsset(env: Env, url: string): Promise<Response | null> {
+  try {
+    const res = await env.ASSETS.fetch(url);
+    return res.ok ? res : null;
+  } catch {
+    return null;
+  }
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
+    try {
+      // 1. Try to serve the exact static asset.
+      try {
+        const asset = await env.ASSETS.fetch(request);
+        if (asset.ok) return asset;
+      } catch {
+        // Asset not found — continue to dynamic routing.
+      }
 
-    // 1. Try to serve the exact static asset.
-    const asset = await env.ASSETS.fetch(request);
-    if (asset.status !== 404) return asset;
+      const url = new URL(request.url);
 
-    // 2. Dynamic project route: /work/<slug>
-    //    Serve a pre-rendered project shell — all shells are identical
-    //    (loading state), so any one works. The client JS will read the
-    //    actual slug from window.location and fetch from Firestore.
-    const segments = url.pathname.replace(/\/$/, "").split("/");
-    if (segments[1] === "work" && segments.length === 3 && segments[2]) {
-      const shell = await env.ASSETS.fetch(
-        new Request(new URL("/work/obsidian-echoes", url.origin), request),
+      // 2. Dynamic project route: /work/<slug>
+      const clean = url.pathname.replace(/\/$/, "");
+      const segments = clean.split("/");
+      if (segments[1] === "work" && segments.length === 3 && segments[2]) {
+        const shell = await tryAsset(
+          env,
+          new URL("/work/obsidian-echoes/", url.origin).toString(),
+        );
+        if (shell) {
+          return new Response(shell.body, {
+            status: 200,
+            headers: shell.headers,
+          });
+        }
+      }
+
+      // 3. Fallback: 404 page
+      const notFound = await tryAsset(
+        env,
+        new URL("/404.html", url.origin).toString(),
       );
-      if (shell.ok) {
-        return new Response(shell.body, {
-          status: 200,
-          headers: shell.headers,
+      if (notFound) {
+        return new Response(notFound.body, {
+          status: 404,
+          headers: notFound.headers,
         });
       }
-    }
 
-    // 3. Everything else: serve the custom 404 page.
-    const notFoundPage = await env.ASSETS.fetch(
-      new Request(new URL("/404", url.origin), request),
-    );
-    return new Response(notFoundPage.body, {
-      status: 404,
-      headers: notFoundPage.headers,
-    });
+      return new Response("Not Found", { status: 404 });
+    } catch {
+      return new Response("Internal Server Error", { status: 500 });
+    }
   },
 };
