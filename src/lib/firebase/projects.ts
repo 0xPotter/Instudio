@@ -59,6 +59,26 @@ export async function getProjects(): Promise<FirestoreProject[]> {
   return snap.docs.map((d) => toProject(d.id, d.data()));
 }
 
+/** Published projects only — for the public site. */
+export async function getPublishedProjects(): Promise<FirestoreProject[]> {
+  const all = await getProjects();
+  return all.filter((p) => p.status === "published");
+}
+
+/** Published + featured — for the home page highlights. */
+export async function getFeaturedProjects(): Promise<FirestoreProject[]> {
+  const published = await getPublishedProjects();
+  return published.filter((p) => p.featured);
+}
+
+/** Find a single project by slug (any status). */
+export async function getProjectBySlug(
+  slug: string,
+): Promise<FirestoreProject | null> {
+  const all = await getProjects();
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
 /* ───────── writes ───────── */
 
 /** Create a new project. Returns the generated ID. */

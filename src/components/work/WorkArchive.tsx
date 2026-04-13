@@ -1,7 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { sortedProjects, type Discipline } from "@/lib/data/projects";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { Discipline } from "@/lib/data/projects";
+import {
+  getPublishedProjects,
+  type FirestoreProject,
+} from "@/lib/firebase/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { ProjectGrid } from "./ProjectGrid";
 
@@ -21,14 +25,30 @@ const FILTER_KEYS: Filter[] = [
 export function WorkArchive() {
   const { t } = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
+  const [allProjects, setAllProjects] = useState<FirestoreProject[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    try {
+      setAllProjects(await getPublishedProjects());
+    } catch (err) {
+      console.error("Failed to load projects:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const projects = useMemo(() => {
     // Audio projects don't surface on /work; they live on /audio.
-    const visible = sortedProjects.filter((p) => p.discipline !== "audio");
+    const visible = allProjects.filter((p) => p.discipline !== "audio");
     return filter === "all"
       ? visible
       : visible.filter((p) => p.discipline === filter);
-  }, [filter]);
+  }, [filter, allProjects]);
 
   return (
     <section className="bg-surface pb-24 pt-32 md:pb-32 md:pt-40">
@@ -76,7 +96,11 @@ export function WorkArchive() {
         </header>
 
         {/* Archive grid */}
-        {projects.length === 0 ? (
+        {loading ? (
+          <p className="py-24 text-center font-label text-sm uppercase tracking-widest text-primary/40 animate-pulse">
+            Loading…
+          </p>
+        ) : projects.length === 0 ? (
           <p className="py-24 text-center font-label text-sm uppercase tracking-widest text-primary/40">
             {t.workPage.empty}
           </p>

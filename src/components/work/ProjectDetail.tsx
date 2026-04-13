@@ -2,10 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { type Project } from "@/lib/data/projects";
+import {
+  getProjectBySlug,
+  type FirestoreProject,
+} from "@/lib/firebase/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type ProjectDetailProps = {
+  /** Static fallback passed by the server component at build time. */
   project: Project;
 };
 
@@ -13,8 +19,20 @@ function formatYear(iso: string): string {
   return iso.slice(0, 4);
 }
 
-export function ProjectDetail({ project }: ProjectDetailProps) {
+export function ProjectDetail({ project: staticProject }: ProjectDetailProps) {
   const { t, locale } = useLocale();
+  const [project, setProject] = useState<Project | FirestoreProject>(
+    staticProject,
+  );
+
+  // Upgrade to live Firestore data after hydration so edits are reflected
+  // without rebuilding the static export.
+  useEffect(() => {
+    getProjectBySlug(staticProject.slug).then((live) => {
+      if (live) setProject(live);
+    });
+  }, [staticProject.slug]);
+
   const images = project.media.filter((m) => m.type === "image");
 
   return (
