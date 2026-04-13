@@ -122,7 +122,7 @@ export function CreateProject() {
         division: (form.get("division") as Division) || "inlabs",
         discipline: (form.get("discipline") as Discipline) || "design",
         media,
-        externalLink: (form.get("external-link") as string)?.trim() || undefined,
+        externalLink: (form.get("external-link") as string)?.trim() || "",
         publishedAt:
           (form.get("published-at") as string) ||
           new Date().toISOString().slice(0, 10),
