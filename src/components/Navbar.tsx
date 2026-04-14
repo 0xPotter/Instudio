@@ -80,12 +80,12 @@ export function Navbar() {
               <span className={locale === "es" ? "text-white" : ""}>ES</span>
             </button>
 
-            <button
-              type="button"
+            <Link
+              href="/contact"
               className="hidden bg-primary px-6 py-2 font-label text-[11px] uppercase tracking-widest text-on-primary transition-all duration-200 hover:opacity-90 md:inline-block"
             >
               {t.nav.cta}
-            </button>
+            </Link>
 
             <button
               type="button"
@@ -152,12 +152,13 @@ export function Navbar() {
             })}
           </nav>
           <div className="mt-auto p-8">
-            <button
-              type="button"
-              className="w-full bg-primary px-6 py-4 font-label text-[11px] uppercase tracking-widest text-on-primary"
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="block w-full bg-primary px-6 py-4 text-center font-label text-[11px] uppercase tracking-widest text-on-primary"
             >
               {t.nav.cta}
-            </button>
+            </Link>
           </div>
         </div>
       </div>

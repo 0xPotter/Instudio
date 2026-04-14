@@ -17,7 +17,14 @@ export type Discipline =
   | "audio";
 
 export type ProjectMedia =
-  | { type: "image"; url: string; alt?: string }
+  | {
+      type: "image";
+      url: string;
+      alt?: string;
+      /** Natural pixel dimensions — used to compute aspect ratio in the grid. */
+      width?: number;
+      height?: number;
+    }
   | { type: "video"; url: string; poster?: string }
   | { type: "embed"; url: string };
 

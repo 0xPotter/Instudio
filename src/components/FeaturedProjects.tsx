@@ -58,8 +58,17 @@ export function FeaturedProjects() {
       ) : (
         <div className="no-scrollbar flex snap-x snap-mandatory gap-px overflow-x-auto px-6 pb-2 md:px-8">
           {featured.map((project, idx) => {
-            const cover = project.media[0];
-            const coverUrl = cover?.type === "image" ? cover.url : undefined;
+            // Prefer the admin-chosen 4:5 cover crop; fall back to the first
+            // media image (for legacy projects uploaded before the cropper).
+            const firstMedia = project.media[0];
+            const firstImageUrl =
+              firstMedia?.type === "image" ? firstMedia.url : undefined;
+            const coverUrl = project.coverUrl ?? firstImageUrl;
+            // When we have an admin-cropped cover, trust it and fill the card.
+            // Otherwise, contain the legacy image so we don't crop awkwardly.
+            const coverFitClass = project.coverUrl
+              ? "object-cover"
+              : "object-contain";
             return (
               <Link
                 key={project.id}
@@ -73,10 +82,10 @@ export function FeaturedProjects() {
                     fill
                     priority={idx < 2}
                     sizes="(min-width: 1024px) 26vw, (min-width: 768px) 36vw, (min-width: 640px) 52vw, 78vw"
-                    className="h-full w-full object-cover grayscale transition-all duration-[1500ms] group-hover:scale-[1.04] group-hover:grayscale-0"
+                    className={`h-full w-full ${coverFitClass} grayscale transition-all duration-[1500ms] group-hover:grayscale-0`}
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/90 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-6 md:p-8">
                   <span className="font-label text-[10px] uppercase tracking-widest text-primary/70">
                     {t.workPage.filters[project.discipline]} /{" "}

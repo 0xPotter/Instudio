@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,6 +8,8 @@ import {
   type FirestoreProject,
 } from "@/lib/firebase/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { ImageLightbox } from "./ImageLightbox";
+import { ProjectMediaGrid } from "./ProjectMediaGrid";
 
 function formatYear(iso: string): string {
   return iso.slice(0, 4);
@@ -22,6 +23,7 @@ export function ProjectDetail() {
   const [project, setProject] = useState<FirestoreProject | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -35,7 +37,10 @@ export function ProjectDetail() {
           setNotFound(true);
         }
       })
-      .catch(() => setNotFound(true))
+      .catch((err) => {
+        console.error("ProjectDetail fetch error:", err);
+        setNotFound(true);
+      })
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -65,7 +70,15 @@ export function ProjectDetail() {
     );
   }
 
-  const images = project.media.filter((m) => m.type === "image");
+  const images = project.media.filter(
+    (m): m is Extract<typeof m, { type: "image" }> => m.type === "image",
+  );
+  const gridImages = images.map((m, idx) => ({
+    url: m.url,
+    alt: m.alt ?? `${project.title[locale]} — ${idx + 1}`,
+    width: m.width,
+    height: m.height,
+  }));
 
   return (
     <article className="bg-surface pb-32 pt-32 md:pt-40">
@@ -88,28 +101,8 @@ export function ProjectDetail() {
         </p>
       </header>
 
-      {images.length > 0 && (
-        <div className="grid w-full grid-cols-1 gap-px md:grid-cols-2">
-          {images.map((media, idx) => (
-            <div
-              key={`img-${idx}`}
-              className="relative aspect-[3/2] w-full overflow-hidden bg-surface-container-low"
-            >
-              <Image
-                src={media.url}
-                alt={
-                  media.type === "image" && media.alt
-                    ? media.alt
-                    : `${project.title[locale]} — ${idx + 1}`
-                }
-                fill
-                priority={idx < 2}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
+      {gridImages.length > 0 && (
+        <ProjectMediaGrid images={gridImages} onOpen={setLightboxIndex} />
       )}
 
       {project.externalLink && project.externalLink.length > 0 && (
@@ -123,6 +116,26 @@ export function ProjectDetail() {
             {t.workPage.cta.action}
           </a>
         </div>
+      )}
+
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          images={gridImages}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onPrev={() =>
+            setLightboxIndex((i) =>
+              i === null
+                ? null
+                : (i - 1 + gridImages.length) % gridImages.length,
+            )
+          }
+          onNext={() =>
+            setLightboxIndex((i) =>
+              i === null ? null : (i + 1) % gridImages.length,
+            )
+          }
+        />
       )}
     </article>
   );

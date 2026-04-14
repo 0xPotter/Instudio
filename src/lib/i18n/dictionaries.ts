@@ -97,7 +97,7 @@ export const dictionaries = {
       connect: "Connect",
       contact: "Contact",
       tagline: "Inteligencia Natural",
-      rights: "© 2024 IN Studio. All rights reserved.",
+      rights: "© 2026 IN Studio. All rights reserved.",
       systemStatus: "All Systems Operational",
     },
     contactPage: {
@@ -219,7 +219,7 @@ export const dictionaries = {
       connect: "Conectar",
       contact: "Contacto",
       tagline: "Inteligencia Natural",
-      rights: "© 2024 IN Studio. Todos los derechos reservados.",
+      rights: "© 2026 IN Studio. Todos los derechos reservados.",
       systemStatus: "Todos los Sistemas Operativos",
     },
     contactPage: {

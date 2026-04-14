@@ -46,12 +46,12 @@ export function Footer() {
 
         <div className="flex w-full flex-col items-start md:w-1/2 md:items-end">
           <div className="mb-12 flex space-x-12">
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="font-body text-sm text-white underline transition-transform hover:-translate-y-1"
             >
               {t.footer.contact}
-            </a>
+            </Link>
           </div>
           <div className="mb-6 flex items-center gap-3">
             <span className="relative flex h-2 w-2">

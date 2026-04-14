@@ -93,6 +93,15 @@ export function AdminShell({
           </nav>
 
           <div className="mt-auto flex flex-col gap-4">
+            <Link
+              href="/"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="flex items-center justify-between rounded border border-neutral-800 bg-neutral-900/40 px-3 py-2.5 font-label text-[11px] uppercase tracking-widest text-neutral-300 transition-colors hover:border-neutral-700 hover:bg-neutral-900 hover:text-white"
+            >
+              <span>View Site</span>
+              <span aria-hidden="true">↗</span>
+            </Link>
             <div className="flex items-center gap-3 border-t border-neutral-900 pt-6">
               {photoURL ? (
                 /* eslint-disable-next-line @next/next/no-img-element */

@@ -5,6 +5,7 @@ import {
   getDocs,
   orderBy,
   query,
+  where,
   setDoc,
   updateDoc,
   serverTimestamp,
@@ -25,6 +26,11 @@ export type FirestoreProject = {
   division: Division;
   discipline: Discipline;
   media: ProjectMedia[];
+  /**
+   * Optional pre-cropped cover (4:5) used by the home "featured" cards.
+   * When absent, the UI falls back to the first media image.
+   */
+  coverUrl?: string;
   externalLink?: string;
   publishedAt: string;
   featured: boolean;
@@ -44,6 +50,7 @@ function toProject(id: string, data: DocumentData): FirestoreProject {
     division: data.division ?? "inlabs",
     discipline: data.discipline ?? "design",
     media: data.media ?? [],
+    coverUrl: data.coverUrl,
     externalLink: data.externalLink,
     publishedAt: data.publishedAt ?? "",
     featured: data.featured ?? false,
@@ -54,9 +61,19 @@ function toProject(id: string, data: DocumentData): FirestoreProject {
 /* ───────── reads ───────── */
 
 export async function getProjects(): Promise<FirestoreProject[]> {
-  const q = query(collection(db, COL), orderBy("publishedAt", "desc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => toProject(d.id, d.data()));
+  try {
+    const q = query(collection(db, COL), orderBy("publishedAt", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => toProject(d.id, d.data()));
+  } catch (err) {
+    // orderBy may fail if the Firestore index hasn't been created yet.
+    // Fall back to an unordered read so the site still works.
+    console.warn("getProjects: ordered query failed, falling back to unordered read.", err);
+    const snap = await getDocs(collection(db, COL));
+    const results = snap.docs.map((d) => toProject(d.id, d.data()));
+    results.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+    return results;
+  }
 }
 
 /** Published projects only — for the public site. */
@@ -75,8 +92,17 @@ export async function getFeaturedProjects(): Promise<FirestoreProject[]> {
 export async function getProjectBySlug(
   slug: string,
 ): Promise<FirestoreProject | null> {
-  const all = await getProjects();
-  return all.find((p) => p.slug === slug) ?? null;
+  try {
+    // Direct query by slug — no index needed, no full collection scan.
+    const q = query(collection(db, COL), where("slug", "==", slug));
+    const snap = await getDocs(q);
+    if (snap.empty) return null;
+    const d = snap.docs[0];
+    return toProject(d.id, d.data());
+  } catch (err) {
+    console.error("getProjectBySlug failed:", err);
+    return null;
+  }
 }
 
 /* ───────── writes ───────── */
