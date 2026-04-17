@@ -56,15 +56,9 @@ export function WorkArchive() {
         {/* Header */}
         <header className="mb-16 flex flex-col gap-12 md:mb-20 md:flex-row md:items-end md:justify-between">
           <div className="flex max-w-2xl flex-col gap-6">
-            <span className="font-label text-[10px] uppercase tracking-[0.3em] text-primary/40">
-              {t.workPage.eyebrow}
-            </span>
             <h1 className="font-headline text-6xl font-black uppercase tracking-tighter md:text-8xl">
               {t.workPage.title}
             </h1>
-            <p className="max-w-xl font-body text-base leading-relaxed text-primary/60 md:text-lg">
-              {t.workPage.intro}
-            </p>
           </div>
 
           {/* Filters */}

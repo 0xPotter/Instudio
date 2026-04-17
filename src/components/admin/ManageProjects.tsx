@@ -61,28 +61,28 @@ export function ManageProjects() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this project? This cannot be undone.")) return;
+    if (!confirm("¿Eliminar este proyecto? Esta acción no se puede deshacer.")) return;
     await deleteProject(id);
     setItems((prev) => prev.filter((p) => p.id !== id));
   }
 
   return (
     <AdminShell
-      eyebrow="Workspace / Projects"
-      title="Manage Projects"
+      eyebrow="Espacio / Proyectos"
+      title="Gestionar Proyectos"
       actions={
         <Link
           href="/admin/create"
           className="inline-flex items-center gap-2 rounded-full border border-primary px-6 py-3 font-label text-[10px] uppercase tracking-widest text-primary transition-all hover:bg-primary hover:text-surface"
         >
-          + New Project
+          + Nuevo Proyecto
         </Link>
       }
     >
       {/* Status filters */}
       <div className="mb-10 flex flex-wrap items-center gap-3">
         <span className="font-label text-[10px] uppercase tracking-[0.3em] text-primary/40">
-          Filter
+          Filtrar
         </span>
         {(["all", "published", "draft", "archived"] as const).map((key) => {
           const active = filter === key;
@@ -111,21 +111,21 @@ export function ManageProjects() {
       {/* Loading state */}
       {loading ? (
         <p className="py-24 text-center font-label text-sm uppercase tracking-widest text-primary/40 animate-pulse">
-          Loading projects…
+          Cargando proyectos…
         </p>
       ) : visible.length === 0 ? (
         <div className="flex flex-col items-center gap-6 py-24">
           <p className="font-label text-sm uppercase tracking-widest text-primary/40">
             {items.length === 0
-              ? "No projects yet. Create your first one."
-              : "No projects in this view."}
+              ? "Aún no hay proyectos. Crea el primero."
+              : "No hay proyectos en esta vista."}
           </p>
           {items.length === 0 && (
             <Link
               href="/admin/create"
               className="inline-flex items-center gap-2 rounded-full border border-primary px-6 py-3 font-label text-[10px] uppercase tracking-widest text-primary transition-all hover:bg-primary hover:text-surface"
             >
-              + Create Project
+              + Crear Proyecto
             </Link>
           )}
         </div>
@@ -133,12 +133,12 @@ export function ManageProjects() {
         <div className="border border-outline-variant/10">
           {/* Header row */}
           <div className="hidden grid-cols-[80px_2fr_1fr_1fr_1fr_auto] items-center gap-6 border-b border-outline-variant/10 px-6 py-4 font-label text-[10px] uppercase tracking-widest text-primary/40 md:grid">
-            <span>Cover</span>
-            <span>Title</span>
-            <span>Division</span>
-            <span>Discipline</span>
-            <span>Status</span>
-            <span className="text-right">Actions</span>
+            <span>Portada</span>
+            <span>Título</span>
+            <span>División</span>
+            <span>Disciplina</span>
+            <span>Estado</span>
+            <span className="text-right">Acciones</span>
           </div>
 
           <ul className="divide-y divide-outline-variant/10">
@@ -200,21 +200,21 @@ export function ManageProjects() {
                       }
                       className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 transition-colors hover:border-primary hover:text-primary"
                     >
-                      {project.featured ? "Unfeature" : "Feature"}
+                      {project.featured ? "Quitar destaque" : "Destacar"}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleArchive(project.id)}
                       className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 transition-colors hover:border-primary hover:text-primary"
                     >
-                      Archive
+                      Archivar
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(project.id)}
                       className="rounded border border-red-500/30 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-red-400/80 transition-colors hover:border-red-400 hover:text-red-400"
                     >
-                      Delete
+                      Eliminar
                     </button>
                   </div>
                 </li>

@@ -8,8 +8,8 @@ import { useAuth } from "@/lib/firebase/AuthProvider";
 import { signOut } from "@/lib/firebase/auth";
 
 const NAV = [
-  { label: "Manage", href: "/admin" },
-  { label: "Create", href: "/admin/create" },
+  { label: "Gestionar", href: "/admin" },
+  { label: "Crear", href: "/admin/create" },
 ];
 
 type AdminShellProps = {
@@ -61,14 +61,14 @@ export function AdminShell({
                 IN Studio
               </span>
               <span className="font-label text-[9px] uppercase tracking-[0.25em] text-neutral-500">
-                Admin Console
+                Panel Admin
               </span>
             </div>
           </Link>
 
           <nav className="flex flex-col gap-1">
             <span className="mb-3 font-label text-[9px] uppercase tracking-[0.3em] text-neutral-600">
-              Workspace
+              Espacio de trabajo
             </span>
             {NAV.map((item) => {
               const active =
@@ -99,7 +99,7 @@ export function AdminShell({
               rel="noreferrer noopener"
               className="flex items-center justify-between rounded border border-neutral-800 bg-neutral-900/40 px-3 py-2.5 font-label text-[11px] uppercase tracking-widest text-neutral-300 transition-colors hover:border-neutral-700 hover:bg-neutral-900 hover:text-white"
             >
-              <span>View Site</span>
+              <span>Ver Sitio</span>
               <span aria-hidden="true">↗</span>
             </Link>
             <div className="flex items-center gap-3 border-t border-neutral-900 pt-6">
@@ -130,7 +130,7 @@ export function AdminShell({
               onClick={handleSignOut}
               className="text-left font-label text-[10px] uppercase tracking-widest text-neutral-500 hover:text-white"
             >
-              Sign Out →
+              Cerrar sesión →
             </button>
           </div>
         </div>

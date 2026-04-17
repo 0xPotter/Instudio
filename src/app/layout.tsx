@@ -18,10 +18,14 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "IN — Architects of Impact",
+  title: "Inteligencia Natural",
   description:
-    "IN is a digital agency curating experiences across design, audio, and technology.",
-  metadataBase: new URL("https://in-agency.com"),
+    "IN Studio — soluciones visuales, sonoras y digitales con inteligencia artificial como aliada.",
+  metadataBase: new URL("https://instudiogt.com"),
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

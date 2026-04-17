@@ -46,9 +46,8 @@ export const dictionaries = {
     },
     workPage: {
       eyebrow: "Archive / 2021—2024",
-      title: "The Work.",
-      intro:
-        "A living archive of selected projects across photography, video, animation, design, branding, and audio. Each fragment is a study in restraint, intuition, and the quiet alchemy between human craft and machine.",
+      title: "What do we do?",
+      intro: "",
       filterLabel: "Filter",
       filters: {
         all: "All",
@@ -63,9 +62,9 @@ export const dictionaries = {
       backToWork: "Back to Work",
       cta: {
         eyebrow: "Start a Project",
-        heading: "Have a vision worth building?",
+        heading: "Do you have a project ready to launch?",
         description:
-          "We're a small team with strong opinions and an open inbox. Tell us what you're working on.",
+          "We're a team ready to make incredible ideas a reality, with an open inbox. Tell us what you're working on.",
         action: "Get in Touch",
       },
       systemStatus: "Archive Operational",
@@ -168,9 +167,8 @@ export const dictionaries = {
     },
     workPage: {
       eyebrow: "Archivo / 2021—2024",
-      title: "El Trabajo.",
-      intro:
-        "Un archivo vivo de proyectos seleccionados a través de fotografía, video, animación, diseño, branding y audio. Cada fragmento es un estudio de contención, intuición y la alquimia silenciosa entre el oficio humano y la máquina.",
+      title: "¿Qué hacemos?",
+      intro: "",
       filterLabel: "Filtrar",
       filters: {
         all: "Todos",
@@ -185,9 +183,9 @@ export const dictionaries = {
       backToWork: "Volver a Trabajos",
       cta: {
         eyebrow: "Inicia un Proyecto",
-        heading: "¿Tienes una visión que valga la pena construir?",
+        heading: "¿Tienes un proyecto listo para despegar?",
         description:
-          "Somos un equipo pequeño con opiniones fuertes y un buzón abierto. Cuéntanos en qué estás trabajando.",
+          "Somos un equipo listo para hacer realidad ideas increíbles y un buzón abierto. Cuéntanos en qué estás trabajando.",
         action: "Contáctanos",
       },
       systemStatus: "Archivo Operativo",

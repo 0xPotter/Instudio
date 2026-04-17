@@ -133,18 +133,18 @@ export function CreateProject() {
       const form = new FormData(event.currentTarget);
       const status: ProjectStatus = form.get("intent") === "draft" ? "draft" : "published";
 
-      const titleEn = (form.get("title-en") as string).trim();
+      // Single title field — used as-is for both locales (no translation).
       const titleEs = (form.get("title-es") as string).trim();
       const rawSlug = (form.get("slug") as string).trim();
 
-      if (!titleEn) {
-        setError("Title (EN) is required.");
+      if (!titleEs) {
+        setError("El título es obligatorio.");
         setSubmitting(false);
         return;
       }
 
       // Auto-generate a URL-safe slug from the input or title.
-      const slug = toSlug(rawSlug || titleEn);
+      const slug = toSlug(rawSlug || titleEs);
 
       if (!slug) {
         setError("Could not generate a valid slug.");
@@ -159,7 +159,7 @@ export function CreateProject() {
       let media: ProjectMedia[] = [];
       let coverUrl: string | undefined;
       if (heroFile) {
-        setProgress("Uploading hero image…");
+        setProgress("Subiendo portada…");
         const [heroUrl, dims, uploadedCoverUrl] = await Promise.all([
           uploadProjectFile(tempId, heroFile.file, "hero"),
           readImageDimensions(heroFile.file).catch(() => null),
@@ -170,7 +170,7 @@ export function CreateProject() {
         media.push({
           type: "image",
           url: heroUrl,
-          alt: titleEn,
+          alt: titleEs,
           ...(dims ? { width: dims.width, height: dims.height } : {}),
         });
         coverUrl = uploadedCoverUrl;
@@ -178,7 +178,7 @@ export function CreateProject() {
 
       // 2. Upload gallery
       for (let i = 0; i < galleryFiles.length; i++) {
-        setProgress(`Uploading gallery ${i + 1}/${galleryFiles.length}…`);
+        setProgress(`Subiendo galería ${i + 1}/${galleryFiles.length}…`);
         const [url, dims] = await Promise.all([
           uploadProjectFile(tempId, galleryFiles[i].file, "gallery"),
           readImageDimensions(galleryFiles[i].file).catch(() => null),
@@ -197,12 +197,13 @@ export function CreateProject() {
       }
 
       // 4. Create Firestore document
-      setProgress("Saving project…");
+      setProgress("Guardando proyecto…");
       await createProject({
         slug,
-        title: { en: titleEn, es: titleEs || titleEn },
+        // Title is the same for both locales — no translation applied.
+        title: { en: titleEs, es: titleEs },
         description: {
-          en: (form.get("description-en") as string)?.trim() || "",
+          en: (form.get("description-es") as string)?.trim() || "",
           es: (form.get("description-es") as string)?.trim() || "",
         },
         division: (form.get("division") as Division) || "inlabs",
@@ -223,56 +224,44 @@ export function CreateProject() {
       router.push("/admin");
     } catch (err) {
       console.error("Create project failed:", err);
-      setError("Something went wrong. Check the console and try again.");
+      setError("Algo salió mal. Revisa la consola e intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <AdminShell eyebrow="Workspace / New" title="Create Project">
+    <AdminShell eyebrow="Espacio / Nuevo" title="Crear Proyecto">
       <form
         onSubmit={handleSubmit}
         className="grid gap-12 lg:grid-cols-3 lg:gap-16"
       >
         {/* Left column — main fields */}
         <div className="flex flex-col gap-10 lg:col-span-2">
-          <Section label="Basics">
-            <div className="grid gap-6 md:grid-cols-2">
-              <TextField
-                id="title-en"
-                label="Title (EN)"
-                placeholder="Obsidian Echoes"
-                required
-              />
-              <TextField
-                id="title-es"
-                label="Title (ES)"
-                placeholder="Ecos de Obsidiana"
-              />
-            </div>
+          <Section label="Datos básicos">
+            <TextField
+              id="title-es"
+              label="Título del proyecto"
+              placeholder="Ecos de Obsidiana"
+              required
+            />
             <TextField
               id="slug"
-              label="Slug (optional — auto-generated from title)"
-              placeholder="obsidian-echoes"
-            />
-            <Textarea
-              id="description-en"
-              label="Description (EN)"
-              placeholder="Spatial audio installation exploring…"
+              label="Slug (opcional — se genera automáticamente)"
+              placeholder="ecos-de-obsidiana"
             />
             <Textarea
               id="description-es"
-              label="Description (ES)"
+              label="Descripción"
               placeholder="Instalación de audio espacial explorando…"
             />
           </Section>
 
-          <Section label="Media">
-            {/* Hero image */}
+          <Section label="Medios">
+            {/* Portada */}
             <div>
               <span className="mb-3 block font-label text-[10px] uppercase tracking-[0.3em] text-primary/40">
-                Hero Image
+                Portada
               </span>
               {heroFile ? (
                 <div className="flex items-center gap-4 border border-outline-variant/10 p-4">
@@ -290,7 +279,7 @@ export function CreateProject() {
                     </span>
                     <span className="font-label text-[10px] uppercase tracking-widest text-primary/40">
                       {(heroFile.file.size / 1024).toFixed(1)} KB
-                      {coverBlob ? " · Cover crop ready (4:5)" : " · Crop pending"}
+                      {coverBlob ? " · Encuadre listo (4:5)" : " · Pendiente encuadre"}
                     </span>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -299,14 +288,14 @@ export function CreateProject() {
                       onClick={handleRecrop}
                       className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 hover:border-primary hover:text-primary"
                     >
-                      {coverBlob ? "Re-crop" : "Crop Cover"}
+                      {coverBlob ? "Re-encuadrar" : "Encuadrar"}
                     </button>
                     <button
                       type="button"
                       onClick={clearHero}
                       className="rounded border border-primary/20 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest text-primary/70 hover:border-primary hover:text-primary"
                     >
-                      Replace
+                      Reemplazar
                     </button>
                   </div>
                 </div>
@@ -314,7 +303,7 @@ export function CreateProject() {
                 <UploadDropzone
                   id="hero-upload"
                   onChange={handleHero}
-                  hint="Single image — we'll ask you to frame a 4:5 featured cover after upload."
+                  hint="Una imagen — te pediremos encuadrar el recorte 4:5 para destacados."
                 />
               )}
             </div>
@@ -322,13 +311,13 @@ export function CreateProject() {
             {/* Gallery uploads */}
             <div>
               <span className="mb-3 block font-label text-[10px] uppercase tracking-[0.3em] text-primary/40">
-                Gallery
+                Galería
               </span>
               <UploadDropzone
                 id="gallery-upload"
                 multiple
                 onChange={handleGallery}
-                hint="Drop images. They appear in the order uploaded."
+                hint="Sube las imágenes. Aparecen en el orden que las subas."
               />
               {galleryFiles.length > 0 && (
                 <ul className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -360,7 +349,7 @@ export function CreateProject() {
             {/* External video link */}
             <TextField
               id="video-link"
-              label="Video Link (Vimeo / YouTube)"
+              label="Enlace de video (Vimeo / YouTube)"
               placeholder="https://vimeo.com/…"
               type="url"
             />
@@ -369,10 +358,10 @@ export function CreateProject() {
 
         {/* Right column — meta */}
         <aside className="flex flex-col gap-10">
-          <Section label="Classification">
+          <Section label="Clasificación">
             <SelectField
               id="division"
-              label="Division"
+              label="División"
               options={DIVISIONS.map((d) => ({
                 value: d.value,
                 label: d.label,
@@ -381,7 +370,7 @@ export function CreateProject() {
             />
             <SelectField
               id="discipline"
-              label="Discipline"
+              label="Disciplina"
               options={DISCIPLINES.map((d) => ({
                 value: d,
                 label: d.charAt(0).toUpperCase() + d.slice(1),
@@ -390,19 +379,19 @@ export function CreateProject() {
             />
             <TextField
               id="external-link"
-              label="External Link"
+              label="Enlace externo"
               placeholder="https://"
               type="url"
             />
             <TextField
               id="published-at"
-              label="Publish Date"
+              label="Fecha de publicación"
               type="date"
               required
             />
           </Section>
 
-          <Section label="Visibility">
+          <Section label="Visibilidad">
             <label className="flex items-center gap-3">
               <input
                 type="checkbox"
@@ -410,7 +399,7 @@ export function CreateProject() {
                 className="h-4 w-4 accent-primary"
               />
               <span className="font-label text-[10px] uppercase tracking-widest text-primary/70">
-                Mark as Featured
+                Marcar como Destacado
               </span>
             </label>
           </Section>
@@ -424,7 +413,7 @@ export function CreateProject() {
               disabled={submitting}
               className="w-full rounded-full bg-primary py-4 font-label text-[11px] uppercase tracking-widest text-surface transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting ? progress || "Publishing…" : "Publish Project"}
+              {submitting ? progress || "Publicando…" : "Publicar Proyecto"}
             </button>
             <button
               type="submit"
@@ -433,7 +422,7 @@ export function CreateProject() {
               disabled={submitting}
               className="w-full rounded-full border border-primary/30 py-4 font-label text-[11px] uppercase tracking-widest text-primary/70 transition-all hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting ? progress || "Saving…" : "Save Draft"}
+              {submitting ? progress || "Guardando…" : "Guardar Borrador"}
             </button>
             {error && (
               <p className="text-center font-label text-[10px] uppercase tracking-widest text-red-400">
@@ -590,7 +579,7 @@ function UploadDropzone({
       className="flex cursor-pointer flex-col items-center justify-center gap-3 border border-dashed border-primary/20 px-6 py-12 text-center transition-colors hover:border-primary/60"
     >
       <span className="font-label text-[11px] uppercase tracking-[0.25em] text-primary/70">
-        Click to upload
+        Haz clic para subir
       </span>
       {hint && (
         <span className="font-label text-[10px] uppercase tracking-widest text-primary/40">

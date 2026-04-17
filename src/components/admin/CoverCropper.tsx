@@ -82,10 +82,10 @@ export function CoverCropper({
       <div className="flex items-center justify-between border-b border-white/10 px-6 py-4 md:px-10">
         <div className="flex flex-col">
           <span className="font-label text-[10px] uppercase tracking-[0.3em] text-white/50">
-            Featured Cover
+            Imagen Destacada
           </span>
           <span className="font-headline text-base font-bold uppercase tracking-tight text-white">
-            Adjust crop (4:5)
+            Ajustar encuadre (4:5)
           </span>
         </div>
         <button
@@ -93,7 +93,7 @@ export function CoverCropper({
           onClick={onCancel}
           className="rounded-full border border-white/20 px-5 py-2 font-label text-[10px] uppercase tracking-widest text-white/80 transition-colors hover:border-white hover:text-white"
         >
-          Cancel
+          Cancelar
         </button>
       </div>
 
@@ -118,6 +118,7 @@ export function CoverCropper({
           <span className="font-label text-[10px] uppercase tracking-widest text-white/50">
             Zoom
           </span>
+          {/* label stays "Zoom" — it's universal */}
           <input
             type="range"
             min={1}
@@ -135,7 +136,7 @@ export function CoverCropper({
           disabled={!pixels || busy}
           className="w-full rounded-full bg-white px-8 py-3 font-label text-[11px] uppercase tracking-widest text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
         >
-          {busy ? "Cropping…" : "Confirm Crop"}
+          {busy ? "Procesando…" : "Confirmar encuadre"}
         </button>
       </div>
     </div>

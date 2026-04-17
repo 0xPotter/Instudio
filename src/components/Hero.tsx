@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function Hero() {
@@ -8,15 +7,25 @@ export function Hero() {
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface pt-20">
+      {/* Video background — desktop uses 720p, mobile uses 360p */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="https://picsum.photos/seed/in-hero/1920/1080"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover"
+          poster="/hero-poster.jpg"
+          preload="none"
+        >
+          {/* Mobile-first: small source loaded first on narrow viewports */}
+          <source
+            src="/hero-mobile.mp4"
+            type="video/mp4"
+            media="(max-width: 767px)"
+          />
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
       </div>
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-surface/30 via-surface/40 to-surface/80" />
 
