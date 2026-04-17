@@ -50,10 +50,14 @@ export function FeaturedProjects() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <span className="font-label text-[10px] uppercase tracking-widest text-primary/40 animate-pulse">
-            Loading…
-          </span>
+        /* Skeleton cards — same geometry as real cards, prevents layout shift */
+        <div className="no-scrollbar flex snap-x snap-mandatory gap-px overflow-x-auto px-6 pb-2 md:px-8">
+          {[1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="aspect-[4/5] w-[78vw] flex-shrink-0 animate-pulse bg-surface-container-low sm:w-[52vw] md:w-[36vw] lg:w-[26vw]"
+            />
+          ))}
         </div>
       ) : (
         <div className="no-scrollbar flex snap-x snap-mandatory gap-px overflow-x-auto px-6 pb-2 md:px-8">

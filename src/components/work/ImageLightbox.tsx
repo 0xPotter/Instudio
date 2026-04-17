@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect } from "react";
 
 type LightboxImage = { url: string; alt?: string };
@@ -13,13 +12,7 @@ type ImageLightboxProps = {
   onNext: () => void;
 };
 
-export function ImageLightbox({
-  images,
-  index,
-  onClose,
-  onPrev,
-  onNext,
-}: ImageLightboxProps) {
+export function ImageLightbox({ images, index, onClose, onPrev, onNext }: ImageLightboxProps) {
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -54,16 +47,11 @@ export function ImageLightbox({
       {/* Close */}
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose();
-        }}
-        aria-label="Close"
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
+        aria-label="Cerrar"
         className="absolute right-6 top-6 z-10 flex h-11 w-11 items-center justify-center text-white/60 transition-colors hover:text-white md:right-8 md:top-8"
       >
-        <span aria-hidden="true" className="text-3xl leading-none">
-          ×
-        </span>
+        <span aria-hidden="true" className="text-3xl leading-none">×</span>
       </button>
 
       {/* Counter */}
@@ -77,16 +65,11 @@ export function ImageLightbox({
       {hasMultiple && (
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onPrev();
-          }}
-          aria-label="Previous"
+          onClick={(e) => { e.stopPropagation(); onPrev(); }}
+          aria-label="Anterior"
           className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white/60 transition-colors hover:text-white md:left-8"
         >
-          <span aria-hidden="true" className="text-3xl leading-none">
-            ←
-          </span>
+          <span aria-hidden="true" className="text-3xl leading-none">←</span>
         </button>
       )}
 
@@ -94,31 +77,25 @@ export function ImageLightbox({
       {hasMultiple && (
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onNext();
-          }}
-          aria-label="Next"
+          onClick={(e) => { e.stopPropagation(); onNext(); }}
+          aria-label="Siguiente"
           className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-white/60 transition-colors hover:text-white md:right-8"
         >
-          <span aria-hidden="true" className="text-3xl leading-none">
-            →
-          </span>
+          <span aria-hidden="true" className="text-3xl leading-none">→</span>
         </button>
       )}
 
-      {/* Image */}
+      {/* Image — plain <img> for maximum compatibility in static export */}
       <div
-        className="relative h-full w-full"
+        className="relative flex h-full w-full items-center justify-center p-16"
         onClick={(e) => e.stopPropagation()}
       >
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={current.url}
           alt={current.alt ?? ""}
-          fill
-          sizes="100vw"
-          priority
-          className="object-contain"
+          className="max-h-full max-w-full object-contain"
+          draggable={false}
         />
       </div>
     </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 type GridImage = {
@@ -15,26 +14,6 @@ type ProjectMediaGridProps = {
   onOpen: (index: number) => void;
 };
 
-/**
- * Smart row-based grid inspired by Behance's project editor.
- *
- * Images are grouped into rows of 2–3 (or 1 for a single image). Within a
- * row, each image's flex-grow is proportional to its aspect ratio, so all
- * images in the row end up the SAME height with widths that reflect their
- * natural proportions — no cropping, no letterboxing, no black bars.
- *
- * Row sizes pattern:
- *   1 → [1]  (full-width hero)
- *   2 → [2]
- *   3 → [3]
- *   4 → [2,2]
- *   5 → [3,2]
- *   6 → [3,3]
- *   7 → [3,2,2]
- *   8 → [3,3,2]
- *   9 → [3,3,3]
- *   10+ → [3, 3, …, <2 or 3>]
- */
 function rowSizes(n: number): number[] {
   if (n <= 0) return [];
   if (n <= 3) return [n];
@@ -43,18 +22,10 @@ function rowSizes(n: number): number[] {
 }
 
 export function ProjectMediaGrid({ images, onOpen }: ProjectMediaGridProps) {
-  // Track dimensions probed at runtime for legacy images that didn't save
-  // width/height at upload time. Keyed by image URL.
-  const [probed, setProbed] = useState<Record<string, { w: number; h: number }>>(
-    {},
-  );
+  const [probed, setProbed] = useState<Record<string, { w: number; h: number }>>({});
 
-  // For every image missing width/height, load it in a detached <img> element
-  // and store its natural dimensions once known.
   useEffect(() => {
-    const missing = images.filter(
-      (img) => !img.width || !img.height,
-    );
+    const missing = images.filter((img) => !img.width || !img.height);
     if (missing.length === 0) return;
 
     let cancelled = false;
@@ -75,15 +46,10 @@ export function ProjectMediaGrid({ images, onOpen }: ProjectMediaGridProps) {
     };
   }, [images, probed]);
 
-  // Resolve the final dimensions for each image — either from saved values or
-  // from the live probe. Fall back to 3:2 only as a last resort (before probe
-  // completes).
   const resolved = useMemo(
     () =>
       images.map((img) => {
-        if (img.width && img.height) {
-          return { ...img, aspect: img.width / img.height };
-        }
+        if (img.width && img.height) return { ...img, aspect: img.width / img.height };
         const p = probed[img.url];
         if (p) return { ...img, aspect: p.w / p.h };
         return { ...img, aspect: 3 / 2 };
@@ -122,18 +88,20 @@ export function ProjectMediaGrid({ images, onOpen }: ProjectMediaGridProps) {
                     flex: `${image.aspect} 1 0`,
                     aspectRatio: `${image.aspect}`,
                   }}
-                  aria-label={`Open image ${absoluteIndex + 1}`}
+                  aria-label={`Abrir imagen ${absoluteIndex + 1}`}
                 >
-                  <Image
+                  {/* Plain <img> — avoids Next.js Image/fill quirks with
+                      dynamic aspect-ratio containers in static export mode */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={image.url}
                     alt={image.alt}
-                    fill
-                    priority={absoluteIndex < 2}
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover"
+                    loading={absoluteIndex < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                   <span className="pointer-events-none absolute bottom-3 right-3 font-label text-[9px] uppercase tracking-[0.3em] text-white/70 opacity-0 transition-opacity group-hover:opacity-100">
-                    View ↗
+                    Ver ↗
                   </span>
                 </button>
               );
