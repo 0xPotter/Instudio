@@ -6,19 +6,18 @@ export function Hero() {
   const { t } = useLocale();
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface pt-20">
-      {/* Video background — desktop uses 720p, mobile uses 360p */}
+    <section className="relative flex h-[70vh] items-center justify-center overflow-hidden bg-surface pt-20 md:h-[80vh]">
+      {/* Video background — desktop 1080p, mobile 720p */}
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center"
           poster="/hero-poster.jpg"
           preload="none"
         >
-          {/* Browsers pick the first source that matches the media query */}
           <source
             src="/hero-mobile.mp4"
             type="video/mp4"
@@ -27,9 +26,14 @@ export function Hero() {
           <source src="/hero.mp4" type="video/mp4" />
         </video>
       </div>
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-surface/30 via-surface/40 to-surface/80" />
 
-      <div className="relative z-20 mx-auto flex w-full max-w-[1440px] flex-col items-start px-6 md:px-8">
+      {/* Dark overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-surface/30 via-surface/40 to-surface/60" />
+
+      {/* Bottom fade — dissolves the video edge into the page background */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 h-40 bg-gradient-to-t from-surface via-surface/80 to-transparent md:h-56" />
+
+      <div className="relative z-30 mx-auto flex w-full max-w-[1440px] flex-col items-start px-6 md:px-8">
         <div className="w-full">
           <h1 className="hero-text-shadow font-headline text-[13vw] font-black uppercase leading-[0.85] tracking-[-0.04em] text-primary sm:text-[12vw] md:text-[8vw]">
             {t.hero.titleLine1}
