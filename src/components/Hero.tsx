@@ -18,7 +18,7 @@ export function Hero() {
           poster="/hero-poster.jpg"
           preload="none"
         >
-          {/* Mobile-first: small source loaded first on narrow viewports */}
+          {/* Browsers pick the first source that matches the media query */}
           <source
             src="/hero-mobile.mp4"
             type="video/mp4"
