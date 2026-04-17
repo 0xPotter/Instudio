@@ -1,40 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function Hero() {
   const { t } = useLocale();
-  // Start with desktop src; swap to mobile on mount if viewport is narrow.
-  // The `key` prop on <video> forces React to fully remount the element
-  // whenever src changes — this triggers native autoPlay on iOS Safari
-  // reliably, without needing to call .play() imperatively.
-  const [src, setSrc] = useState("/hero.mp4");
-
-  useEffect(() => {
-    if (window.innerWidth < 768) setSrc("/hero-mobile.mp4");
-  }, []);
 
   return (
     <section className="relative flex h-[70vh] items-center justify-center overflow-hidden bg-surface pt-20 md:h-[90vh]">
-      {/* Video layer — key ensures full remount when src changes */}
+
+      {/* ─── Video layer ─────────────────────────────────────────────────────
+          Two independent <video> elements, each with autoPlay + muted +
+          playsInline declared in HTML. CSS toggles which one is visible.
+          display:none stops the hidden video from downloading / playing,
+          so the mobile file never loads on desktop and vice-versa.
+          No JS source-switching needed — the browser handles everything. */}
       <div className="absolute inset-0 z-0">
+        {/* Mobile (≤ 767 px) */}
         <video
-          key={src}
           autoPlay
           muted
           loop
           playsInline
           poster="/hero-poster.jpg"
-          src={src}
-          className="h-full w-full object-cover object-center"
-        />
+          className="absolute inset-0 h-full w-full object-cover object-center md:hidden"
+        >
+          <source src="/hero-mobile.mp4" type="video/mp4" />
+        </video>
+
+        {/* Desktop (≥ 768 px) */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/hero-poster.jpg"
+          className="absolute inset-0 hidden h-full w-full object-cover object-center md:block"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Dark overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-surface/20 via-surface/30 to-surface/50" />
 
-      {/* Gaussian blur fade into surface */}
+      {/* Gaussian blur + colour fade at the bottom edge */}
       <div
         className="absolute bottom-0 left-0 right-0 z-20 h-48 md:h-64"
         style={{
