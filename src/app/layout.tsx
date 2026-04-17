@@ -18,7 +18,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Inteligencia Natural",
+  title: "In Studio — Inteligencia Natural",
   description:
     "IN Studio — soluciones visuales, sonoras y digitales con inteligencia artificial como aliada.",
   metadataBase: new URL("https://instudiogt.com"),
